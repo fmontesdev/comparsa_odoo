@@ -7,9 +7,9 @@ class ComparsaChargeType(models.Model):
   _description = "Tipo de cargo de la comparsa"
   _order = "name"
 
-  name = fields.Char(required=True)
-  code = fields.Char(required=True, index=True)
-  active = fields.Boolean(default=True)
+  name = fields.Char(string="Nombre", required=True)
+  code = fields.Char(string="Código", required=True, index=True)
+  active = fields.Boolean(string="Activo", default=True)
 
   # Cuenta de ingresos usada al generar la factura desde un cargo de este tipo
   account_id = fields.Many2one(

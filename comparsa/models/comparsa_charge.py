@@ -9,7 +9,8 @@ class ComparsaCharge(models.Model):
   _order = "id desc"
 
   company_id = fields.Many2one(
-    "res.company",
+    comodel_name="res.company",
+    string="Compañía",
     required=True,
     default=lambda self: self.env.company,
     index=True,
@@ -17,7 +18,8 @@ class ComparsaCharge(models.Model):
 
   # No permite borrar el miembro si tiene cargos asociados
   member_id = fields.Many2one(
-    "comparsa.member",
+    comodel_name="comparsa.member",
+    string="Miembro",
     required=True,
     index=True,
     ondelete="restrict",
@@ -25,7 +27,8 @@ class ComparsaCharge(models.Model):
 
   # No permite borrar el tipo de cargo si tiene cargos asociados
   charge_type_id = fields.Many2one(
-    "comparsa.charge.type",
+    comodel_name="comparsa.charge.type",
+    string="Tipo de cobro",
     required=True,
     index=True,
     ondelete="restrict",
@@ -33,28 +36,30 @@ class ComparsaCharge(models.Model):
 
   # Redundancias aceptadas por eficiencia
   event_id = fields.Many2one(
-    "comparsa.event",
+    comodel_name="comparsa.event",
+    string="Acto",
     index=True,
     ondelete="set null",
   )
 
   # Redundancias aceptadas por eficiencia
   registration_id = fields.Many2one(
-    "comparsa.event.registration",
+    comodel_name="comparsa.event.registration",
+    string="Registro de asistencia",
     index=True,
     ondelete="set null",
   )
 
   periodicity = fields.Selection(
     selection=[("monthly", "Mensual"), ("yearly", "Anual"), ("single", "Único")],
+    string="Periodicidad",
     required=True,
     default="single",
     index=True,
   )
 
-  period_key = fields.Char(index=True)  # monthly: YYYY-MM, yearly: YYYY, single: NULL
-
-  amount_total = fields.Float(required=True)
+  period_key = fields.Char(string="Clave de periodo", index=True)  # monthly: YYYY-MM, yearly: YYYY, single: NULL
+  amount_total = fields.Float(string="Importe total", required=True)
 
   state = fields.Selection(
     selection=[
@@ -64,6 +69,7 @@ class ComparsaCharge(models.Model):
       ("paid", "Pagado"),
       ("cancelled", "Cancelado"),
     ],
+    string="Estado",
     required=True,
     default="pending",
     index=True,

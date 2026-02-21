@@ -9,7 +9,8 @@ class ComparsaEvent(models.Model):
   _order = "date desc, id desc"
 
   company_id = fields.Many2one(
-    "res.company",
+    comodel_name="res.company",
+    string="Comparsa",
     required=True,
     default=lambda self: self.env.company,
     index=True,
@@ -18,6 +19,7 @@ class ComparsaEvent(models.Model):
   # Tipo de acto: festivo, comida, interno
   event_type = fields.Selection(
     selection=[("festive", "Festivo"), ("meal", "Comida"), ("internal", "Interno")],
+    string="Tipo de acto",
     required=True,
     index=True,
   )
@@ -25,13 +27,18 @@ class ComparsaEvent(models.Model):
   # Subtipo de acto, que depende del tipo
   # No permite borrar un subtipo si hay eventos que lo usan
   event_subtype_id = fields.Many2one(
-    "comparsa.event.subtype",
+    comodel_name="comparsa.event.subtype",
+    string="Subtipo de acto",
     required=True,
     index=True,
     ondelete="restrict",
   )
 
-  date = fields.Datetime(required=True, index=True)
+  date = fields.Datetime(
+    string="Fecha",
+    required=True,
+    index=True
+  )
 
   registration_mode = fields.Selection(
     selection=[
@@ -39,6 +46,7 @@ class ComparsaEvent(models.Model):
       ("members_only", "Solo miembros"),
       ("members_and_guests", "Miembros y invitados"),
     ],
+    string="Modo de inscripción",
     required=True,
     default="members_only",
     index=True,
@@ -46,23 +54,24 @@ class ComparsaEvent(models.Model):
 
   pricing_mode = fields.Selection(
     selection=[("free", "Gratis"), ("fixed", "Fijo")],
+    string="Modo de precio",
     required=True,
     default="free",
     index=True,
   )
 
-  price_member = fields.Float(default=0.0)
-  price_guest = fields.Float(default=0.0)
-  price_children = fields.Float(default=0.0)
+  price_member = fields.Float(string="Precio miembro", default=0.0)
+  price_guest = fields.Float(string="Precio invitado", default=0.0)
+  price_children = fields.Float(string="Precio infantil", default=0.0)
 
   # Solo para actos de tipo comida
   restaurant_partner_id = fields.Many2one(
-    "res.partner",
-    string="Restaurant",
+    comodel_name="res.partner",
+    string="Restaurante",
     index=True,
   )
-  menu = fields.Text()
-  active = fields.Boolean(default=True)
+  menu = fields.Text(string="Menú")
+  active = fields.Boolean(string="Activo", default=True)
 
   @api.constrains("pricing_mode", "registration_mode", "price_member", "price_guest", "price_children")
   def _check_prices(self):

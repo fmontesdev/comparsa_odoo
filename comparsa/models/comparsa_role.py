@@ -7,6 +7,11 @@ class ComparsaRole(models.Model):
   _description = "Cargo de la comparsa"
   _order = "name"
 
-  name = fields.Char(required=True, index=True)
-  description = fields.Text()
-  active = fields.Boolean(default=True)
+  name = fields.Char(
+    string="Nombre",
+    required=True,
+    index=True,
+  )
+
+  description = fields.Text(string="Descripción")
+  active = fields.Boolean(string="Activo", default=True)

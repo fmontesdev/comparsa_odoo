@@ -10,24 +10,31 @@ class ComparsaSquadEvent(models.Model):
 
   # No permite borrar el evento si tiene asignaciones de escuadra asociadas
   event_id = fields.Many2one(
-    "comparsa.event",
+    comodel_name="comparsa.event",
+    string="Acto",
     required=True,
     index=True,
     ondelete="restrict",
   )
   # No permite borrar la escuadra si tiene asignaciones de eventos de escuadra asociadas
   squad_id = fields.Many2one(
-    "comparsa.squad",
+    comodel_name="comparsa.squad",
+    string="Escuadra",
     required=True,
     index=True,
     ondelete="restrict",
   )
 
-  order = fields.Integer(required=True, index=True)
+  order = fields.Integer(
+    string="Orden",
+    required=True,
+    index=True
+  )
 
   # No permite borrar bandas de música si tiene asignaciones de eventos de escuadra en eventos
   band_partner_id = fields.Many2one(
-    "res.partner",
+    comodel_name="res.partner",
+    string="Banda de música",
     index=True,
     ondelete="restrict",
   )

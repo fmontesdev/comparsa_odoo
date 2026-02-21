@@ -7,5 +7,10 @@ class ComparsaSquad(models.Model):
   _description = "Escuadra"
   _order = "name"
 
-  name = fields.Char(required=True, index=True)
-  active = fields.Boolean(default=True)
+  name = fields.Char(
+    string="Nombre",
+    required=True,
+    index=True,
+  )
+
+  active = fields.Boolean(string="Activo", default=True)

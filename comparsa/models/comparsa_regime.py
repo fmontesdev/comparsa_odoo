@@ -8,23 +8,45 @@ class MemberRegimeType(models.Model):
   _description = "Regimen del comparsista"
   _order = "name"
 
-  name = fields.Char(required=True, index=True)
+  name = fields.Char(
+    string="Nombre",
+    required=True,
+    index=True,
+  )
 
-  monthly_amount = fields.Float(required=True, default=0.0)
-  yearly_amount = fields.Float(required=True, default=0.0)
+  monthly_amount = fields.Float(
+    string="Cuota mensual",
+    required=True,
+    default=0.0
+  )
 
-  allow_festive_by_default = fields.Boolean(default=False)
-  allow_meal_by_default = fields.Boolean(default=False)
-  allow_internal_by_default = fields.Boolean(default=False)
+  yearly_amount = fields.Float(
+    string="Cuota anual",
+    required=True,
+    default=0.0
+  )
 
-  active = fields.Boolean(default=True)
+  allow_festive_by_default = fields.Boolean(
+    string="Permitir 'Actos Festivos' por defecto",
+    default=False
+  )
+  allow_meal_by_default = fields.Boolean(
+    string="Permitir 'Comidas' por defecto",
+    default=False
+  )
+  allow_internal_by_default = fields.Boolean(
+    string="Permitir 'Actos Internos' por defecto",
+    default=False
+  )
+
+  active = fields.Boolean(string="Activo", default=True)
 
   # Many2many explícita entre régimen y evento (excepciones permitidas)
   allowed_event_ids = fields.Many2many(
-    "comparsa.event",
-    "comparsa_regime_event_rel",
-    "regime_type_id",
-    "event_id",
+    comodel_name="comparsa.event",
+    relation="comparsa_regime_event_rel",
+    column1="regime_type_id",
+    column2="event_id",
     string="Eventos permitidos (excepciones)",
   )
 

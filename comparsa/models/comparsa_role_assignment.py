@@ -10,7 +10,8 @@ class ComparsaRoleAssignment(models.Model):
 
   # No permite borrar el miembro si tiene asignaciones de cargo asociadas
   member_id = fields.Many2one(
-    "comparsa.member",
+    comodel_name="comparsa.member",
+    string="Miembro",
     required=True,
     index=True,
     ondelete="restrict",
@@ -18,14 +19,24 @@ class ComparsaRoleAssignment(models.Model):
 
   # No permite borrar el cargo si tiene asignaciones de cargo asociadas
   role_id = fields.Many2one(
-    "comparsa.role",
+    comodel_name="comparsa.role",
+    string="Cargo",
     required=True,
     index=True,
     ondelete="restrict",
   )
 
-  date_start = fields.Date(required=True, index=True)
-  date_end = fields.Date(required=True, index=True)
+  date_start = fields.Date(
+    string="Fecha de inicio",
+    required=True,
+    index=True
+  )
+  
+  date_end = fields.Date(
+    string="Fecha de fin",
+    required=True,
+    index=True
+  )
 
   # Restricción para validar que no haya solapamientos de cargos según fechas
   @api.constrains("date_start", "date_end")

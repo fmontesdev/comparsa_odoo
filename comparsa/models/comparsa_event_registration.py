@@ -10,7 +10,8 @@ class ComparsaEventRegistration(models.Model):
 
   # No permite borrar el evento si tiene registros de asistencia asociados
   event_id = fields.Many2one(
-    "comparsa.event",
+    comodel_name="comparsa.event",
+    string="Acto",
     required=True,
     index=True,
     ondelete="restrict",
@@ -18,25 +19,29 @@ class ComparsaEventRegistration(models.Model):
 
   # No permite borrar el miembro si tiene registros de asistencia asociados
   member_id = fields.Many2one(
-    "comparsa.member",
+    comodel_name="comparsa.member",
+    string="Miembro",
     index=True,
     ondelete="restrict",
   )
   # No permite borrar el invitado si tiene registros de asistencia
   guest_partner_id = fields.Many2one(
-    "res.partner",
+    comodel_name="res.partner",
+    string="Invitado",
     index=True,
     ondelete="restrict",
   )
   # No permite borrar el comparsista que ha invitado a un invitado registrado
   invited_by_member_id = fields.Many2one(
-    "comparsa.member",
+    comodel_name="comparsa.member",
+    string="Invitado por",
     index=True,
     ondelete="restrict",
   )
 
   state = fields.Selection(
     selection=[("confirmed", "Confirmado"), ("cancelled", "Cancelado")],
+    string="Estado",
     required=True,
     default="confirmed",
     index=True,
