@@ -1,0 +1,25 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_member_manager,comparsa.member manager,model_comparsa_member,comparsa.group_manager,1,1,1,1
+access_regime_manager,comparsa.member.regime.type manager,model_comparsa_member_regime_type,comparsa.group_manager,1,0,0,0
+access_squad_manager,comparsa.squad manager,model_comparsa_squad,comparsa.group_manager,1,0,0,0
+access_role_manager,comparsa.role manager,model_comparsa_role,comparsa.group_manager,1,0,0,0
+access_role_assignment_manager,comparsa.role.assignment manager,model_comparsa_role_assignment,comparsa.group_manager,1,1,1,1
+access_event_manager,comparsa.event manager,model_comparsa_event,comparsa.group_manager,1,1,1,1
+access_event_subtype_manager,comparsa.event.subtype manager,model_comparsa_event_subtype,comparsa.group_manager,1,0,0,0
+access_event_registration_manager,comparsa.event.registration manager,model_comparsa_event_registration,comparsa.group_manager,1,1,1,1
+access_squad_event_manager,comparsa.squad.event manager,model_comparsa_squad_event,comparsa.group_manager,1,1,1,1
+access_charge_type_manager,comparsa.charge.type manager,model_comparsa_charge_type,comparsa.group_manager,1,0,0,0
+access_charge_manager,comparsa.charge manager,model_comparsa_charge,comparsa.group_manager,1,1,1,1
+access_payment_manager,comparsa.payment manager,model_comparsa_payment,comparsa.group_manager,1,1,1,1
+access_member_admin,comparsa.member admin,model_comparsa_member,comparsa.group_admin,1,1,1,1
+access_regime_admin,comparsa.member.regime.type admin,model_comparsa_member_regime_type,comparsa.group_admin,1,1,1,1
+access_squad_admin,comparsa.squad admin,model_comparsa_squad,comparsa.group_admin,1,1,1,1
+access_role_admin,comparsa.role admin,model_comparsa_role,comparsa.group_admin,1,1,1,1
+access_role_assignment_admin,comparsa.role.assignment admin,model_comparsa_role_assignment,comparsa.group_admin,1,1,1,1
+access_event_admin,comparsa.event admin,model_comparsa_event,comparsa.group_admin,1,1,1,1
+access_event_subtype_admin,comparsa.event.subtype admin,model_comparsa_event_subtype,comparsa.group_admin,1,1,1,1
+access_event_registration_admin,comparsa.event.registration admin,model_comparsa_event_registration,comparsa.group_admin,1,1,1,1
+access_squad_event_admin,comparsa.squad.event admin,model_comparsa_squad_event,comparsa.group_admin,1,1,1,1
+access_charge_type_admin,comparsa.charge.type admin,model_comparsa_charge_type,comparsa.group_admin,1,1,1,1
+access_charge_admin,comparsa.charge admin,model_comparsa_charge,comparsa.group_admin,1,1,1,1
+access_payment_admin,comparsa.payment admin,model_comparsa_payment,comparsa.group_admin,1,1,1,1
