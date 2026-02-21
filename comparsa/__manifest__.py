@@ -26,5 +26,9 @@ Funcionalidades principales:
   'depends': ['base'],
   # Carga los archivos para la política de seguridad (grupos y accesos) y las vistas
   'data': [
+    # Seguridad — grupos primero, después accesos
+    'comparsa/security/res_groups.xml',
+    'comparsa/security/ir.model.access.csv',
+    # Vistas (pendiente)
   ],
 }
