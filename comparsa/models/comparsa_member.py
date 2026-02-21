@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
-# from odoo.exceptions import ValidationError
+from odoo import fields, models
 
-#Definimos el modelo de datos
 class ComparsaMember(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.member"

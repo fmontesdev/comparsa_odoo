@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
 
-#Definimos el modelo de datos
 class ComparsaSquad(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.squad"

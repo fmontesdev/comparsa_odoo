@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import fields, models
 
-#Definimos el modelo de datos
 class ComparsaEventSubtype(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.event.subtype"
@@ -17,4 +16,4 @@ class ComparsaEventSubtype(models.Model):
   active = fields.Boolean(default=True)
 
   # Restricciones SQL
-  _uniq_subtype_company_type_name = models.Constraint('UNIQUE(type, name)', 'El subtipo de evento debe ser único por tipo')
+  _uniq_subtype_type_name = models.Constraint('UNIQUE(type, name)', 'El subtipo de evento debe ser único por tipo')

@@ -2,11 +2,10 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-#Definimos el modelo de datos
 class ComparsaSquadEvent(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.squad.event"
-  _description = "Squad Logistics for Festive Event"
+  _description = "Logística de escuadra para un acto festivo"
   _order = "event_id desc, order asc"
 
   # No permite borrar el evento si tiene asignaciones de escuadra asociadas

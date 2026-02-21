@@ -10,7 +10,6 @@ access_event_registration_manager,comparsa.event.registration manager,model_comp
 access_squad_event_manager,comparsa.squad.event manager,model_comparsa_squad_event,comparsa.group_manager,1,1,1,1
 access_charge_type_manager,comparsa.charge.type manager,model_comparsa_charge_type,comparsa.group_manager,1,0,0,0
 access_charge_manager,comparsa.charge manager,model_comparsa_charge,comparsa.group_manager,1,1,1,1
-access_payment_manager,comparsa.payment manager,model_comparsa_payment,comparsa.group_manager,1,1,1,1
 access_member_admin,comparsa.member admin,model_comparsa_member,comparsa.group_admin,1,1,1,1
 access_regime_admin,comparsa.member.regime.type admin,model_comparsa_member_regime_type,comparsa.group_admin,1,1,1,1
 access_squad_admin,comparsa.squad admin,model_comparsa_squad,comparsa.group_admin,1,1,1,1
@@ -22,4 +21,3 @@ access_event_registration_admin,comparsa.event.registration admin,model_comparsa
 access_squad_event_admin,comparsa.squad.event admin,model_comparsa_squad_event,comparsa.group_admin,1,1,1,1
 access_charge_type_admin,comparsa.charge.type admin,model_comparsa_charge_type,comparsa.group_admin,1,1,1,1
 access_charge_admin,comparsa.charge admin,model_comparsa_charge,comparsa.group_admin,1,1,1,1
-access_payment_admin,comparsa.payment admin,model_comparsa_payment,comparsa.group_admin,1,1,1,1

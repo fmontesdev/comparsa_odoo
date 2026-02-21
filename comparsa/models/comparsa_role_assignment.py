@@ -2,7 +2,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-#Definimos el modelo de datos
 class ComparsaRoleAssignment(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.role.assignment"

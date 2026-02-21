@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import fields, models
 
-#Definimos el modelo de datos
 class ComparsaChargeType(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.charge.type"
-  _description = "Charge Type"
+  _description = "Tipo de cargo de la comparsa"
   _order = "name"
 
   name = fields.Char(required=True)
   code = fields.Char(required=True, index=True)
   active = fields.Boolean(default=True)
 
-  _uniq_charge_type_code_company = models.Constraint('UNIQUE(code)', 'El cobro debe tener un código único')
+  # Cuenta de ingresos usada al generar la factura desde un cargo de este tipo
+  account_id = fields.Many2one(
+    "account.account",
+    string="Cuenta contable",
+    domain="[('account_type', 'in', ['income', 'income_other'])]",
+    ondelete="restrict",
+  )
+
+  _uniq_charge_type_code = models.Constraint('UNIQUE(code)', 'El cobro debe tener un código único')

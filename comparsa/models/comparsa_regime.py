@@ -2,7 +2,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-#Definimos el modelo de datos
 class MemberRegimeType(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.member.regime.type"
@@ -26,11 +25,11 @@ class MemberRegimeType(models.Model):
     "comparsa_regime_event_rel",
     "regime_type_id",
     "event_id",
-    string="Allowed Events (Exceptions)",
+    string="Eventos permitidos (excepciones)",
   )
 
   # Restricciones SQL
-  _uniq_regime_name_company = models.Constraint('UNIQUE(name)', 'El nombre del régimen del comparsista debe ser único')
+  _uniq_regime_name = models.Constraint('UNIQUE(name)', 'El nombre del régimen del comparsista debe ser único')
 
   # Restricción para validar que los montos no sean negativos
   @api.constrains("monthly_amount", "yearly_amount")

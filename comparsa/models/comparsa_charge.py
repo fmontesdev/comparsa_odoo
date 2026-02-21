@@ -2,11 +2,10 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-#Definimos el modelo de datos
 class ComparsaCharge(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.charge"
-  _description = "Charge"
+  _description = "Cobro o cuota de la comparsa"
   _order = "id desc"
 
   company_id = fields.Many2one(
@@ -58,10 +57,25 @@ class ComparsaCharge(models.Model):
   amount_total = fields.Float(required=True)
 
   state = fields.Selection(
-    selection=[("pending", "Pendiente"), ("partial", "Parcial"), ("paid", "Pagado"), ("cancelled", "Cancelado")],
+    selection=[
+      ("pending", "Pendiente"),
+      ("invoiced", "Facturado"),
+      ("partial", "Parcial"),
+      ("paid", "Pagado"),
+      ("cancelled", "Cancelado"),
+    ],
     required=True,
     default="pending",
     index=True,
+  )
+
+  # Enlace a la factura de Odoo generada para este cargo
+  invoice_id = fields.Many2one(
+    "account.move",
+    string="Factura",
+    readonly=True,
+    ondelete="set null",
+    copy=False,
   )
 
   @api.constrains("member_id", "charge_type_id", "periodicity", "period_key", "state")
@@ -119,3 +133,54 @@ class ComparsaCharge(models.Model):
     for rec in self:
       if rec.registration_id and rec.event_id and rec.registration_id.event_id != rec.event_id:
         raise ValidationError("event_id debe coincidir con registration_id.event_id cuando ambos están establecidos.")
+
+  @api.constrains("state", "invoice_id")
+  def _check_cancel_with_invoice(self):
+    """Impide cancelar un cargo que ya tiene una factura activa en contabilidad."""
+    for rec in self:
+      if rec.state == "cancelled" and rec.invoice_id and rec.invoice_id.state != "cancel":
+        raise ValidationError(
+          "No se puede cancelar un cargo con una factura activa. "
+          "Cancela primero la factura en contabilidad."
+        )
+
+  def action_create_invoice(self):
+    """Genera una factura de cliente (account.move) para este cargo y la enlaza."""
+    for rec in self:
+      if rec.invoice_id:
+        raise ValidationError("Este cargo ya tiene una factura asociada.")
+      if rec.state == "cancelled":
+        raise ValidationError("No se puede facturar un cargo cancelado.")
+      if not rec.charge_type_id.account_id:
+        raise ValidationError(
+          f"El tipo de cargo '{rec.charge_type_id.name}' no tiene cuenta contable configurada."
+        )
+
+      partner = rec.member_id.partner_id
+      invoice = self.env["account.move"].create({
+        "move_type": "out_invoice",
+        "partner_id": partner.id,
+        "company_id": rec.company_id.id,
+        "invoice_date": fields.Date.today(),
+        "narration": f"Cargo: {rec.charge_type_id.name}"
+                     + (f" — {rec.period_key}" if rec.period_key else ""),
+        "invoice_line_ids": [(0, 0, {
+          "name": rec.charge_type_id.name
+                  + (f" ({rec.period_key})" if rec.period_key else ""),
+          "quantity": 1,
+          "price_unit": rec.amount_total,
+          "account_id": rec.charge_type_id.account_id.id,
+        })],
+      })
+      rec.invoice_id = invoice
+      rec.state = "invoiced"
+
+    # Abrir la factura recién creada (útil cuando se llama desde un botón)
+    if len(self) == 1:
+      return {
+        "type": "ir.actions.act_window",
+        "res_model": "account.move",
+        "res_id": self.invoice_id.id,
+        "view_mode": "form",
+        "target": "current",
+      }
