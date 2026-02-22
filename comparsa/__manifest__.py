@@ -33,6 +33,8 @@ Funcionalidades principales:
     # Vistas
     'views/comparsa_menus.xml',
     'views/comparsa_member_views.xml',
+    'views/comparsa_squad_views.xml',
+    'views/comparsa_regime_views.xml',
   ],
   'assets': {
     'web.assets_backend': [
