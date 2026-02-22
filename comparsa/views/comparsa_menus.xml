@@ -16,10 +16,42 @@
       </field>
     </record>
 
+    <!-- Acción para escuadras -->
+    <record id="comparsa_squad_action" model="ir.actions.act_window">
+      <field name="name">Escuadras</field>
+      <field name="res_model">comparsa.squad</field>
+      <field name="view_mode">list,form</field>
+      <field name="context">{'search_default_filter_activas': 1}</field>
+      <!-- Mensaje para cuando no hay escuadras -->
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea la primera escuadra
+        </p>
+      </field>
+    </record>
+
+    <!-- Acción para regímenes -->
+    <record id="comparsa_regime_action" model="ir.actions.act_window">
+      <field name="name">Regímenes</field>
+      <field name="res_model">comparsa.member.regime.type</field>
+      <field name="view_mode">list,form</field>
+      <field name="context">{'search_default_filter_activos': 1}</field>
+      <!-- Mensaje para cuando no hay regímenes -->
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea el primer régimen
+        </p>
+      </field>
+    </record>
+
     <!-- Menús -->
     <menuitem id="comparsa_menu_root" name="Comparsa">
       <menuitem id="comparsa_first_menu" name="Miembros">
         <menuitem id="comparsa_menu_member_list" action="comparsa_member_action"/>
+      </menuitem>
+      <menuitem id="comparsa_menu_config" name="Configuración">
+        <menuitem id="comparsa_menu_squad" action="comparsa_squad_action"/>
+        <menuitem id="comparsa_menu_regime" action="comparsa_regime_action"/>
       </menuitem>
     </menuitem>
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_regime_view_search" model="ir.ui.view">
+      <field name="name">comparsa.member.regime.type.view.search</field>
+      <field name="model">comparsa.member.regime.type</field>
+      <field name="arch" type="xml">
+        <search string="Buscar regímenes">
+          <field name="name"/>
+          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
+          <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_regime_view_list" model="ir.ui.view">
+      <field name="name">comparsa.member.regime.type.view.list</field>
+      <field name="model">comparsa.member.regime.type</field>
+      <field name="arch" type="xml">
+        <list string="Regímenes">
+          <field name="name"/>
+          <field name="monthly_amount" string="Cuota mensual"/>
+          <field name="yearly_amount" string="Cuota anual"/>
+          <field name="allow_festive_by_default" optional="hide"/>
+          <field name="allow_meal_by_default" optional="hide"/>
+          <field name="allow_internal_by_default" optional="hide"/>
+          <field name="active" optional="hide"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_regime_view_form" model="ir.ui.view">
+      <field name="name">comparsa.member.regime.type.view.form</field>
+      <field name="model">comparsa.member.regime.type</field>
+      <field name="arch" type="xml">
+        <form string="Régimen">
+          <sheet>
+            <!-- Ribbon de estado (archivado) -->
+            <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+            <field name="active" invisible="True"/>
+            
+            <!-- Sección superior: nombre del régimen -->
+            <div class="oe_title">
+              <label for="name"/>
+              <h1>
+                <field name="name" placeholder="Nombre del régimen"/>
+              </h1>
+            </div>
+
+            <!-- Datos básicos -->
+            <group>
+              <group string="Cuotas">
+                <field name="monthly_amount"/>
+                <field name="yearly_amount"/>
+              </group>
+              <group string="Acceso por defecto a eventos">
+                <field name="allow_festive_by_default"/>
+                <field name="allow_meal_by_default"/>
+                <field name="allow_internal_by_default"/>
+              </group>
+            </group>
+
+            <!-- Pestaña de actos permitidos -->
+            <notebook>
+              <page string="Actos permitidos (excepciones)" name="allowed_events">
+                <field name="allowed_event_ids">
+                  <list>
+                    <field name="date"/>
+                    <field name="event_type"/>
+                    <field name="event_subtype_id" string="Acto"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>
