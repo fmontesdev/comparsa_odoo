@@ -37,10 +37,13 @@ Funcionalidades principales:
     'views/comparsa_regime_views.xml',
     'views/comparsa_role_views.xml',
     'views/comparsa_role_assignment_views.xml',
+    'views/comparsa_event_views.xml',
+    'views/comparsa_event_category_views.xml',
   ],
   'assets': {
     'web.assets_backend': [
       'comparsa/static/src/css/comparsa.css',
+      'comparsa/static/src/js/calendar_popover_patch.js',
     ],
   },
 }

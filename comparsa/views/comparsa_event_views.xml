@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_event_view_search" model="ir.ui.view">
+      <field name="name">comparsa.event.view.search</field>
+      <field name="model">comparsa.event</field>
+      <field name="arch" type="xml">
+        <search string="Buscar actos">
+          <field name="event_category_id"/>
+          <filter string="Festivos" name="filter_festivos" domain="[('event_type', '=', 'festive')]"/>
+          <filter string="Comidas" name="filter_comidas" domain="[('event_type', '=', 'meal')]"/>
+          <filter string="Internos" name="filter_internos" domain="[('event_type', '=', 'internal')]"/>
+          <separator/>
+          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
+          <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
+          <group>
+            <filter string="Tipo" name="group_by_type" context="{'group_by': 'event_type'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_event_view_list" model="ir.ui.view">
+      <field name="name">comparsa.event.view.list</field>
+      <field name="model">comparsa.event</field>
+      <field name="arch" type="xml">
+        <list string="Actos">
+          <field name="date"/>
+          <field name="event_category_id" string="Nombre"/>
+          <field name="event_type" widget="badge"
+            decoration-primary="event_type == 'festive'"
+            decoration-success="event_type == 'meal'"
+            decoration-warning="event_type == 'internal'"
+          />
+          <field name="registration_mode" optional="show"/>
+          <field name="pricing_mode" optional="show" invisible="registration_mode == 'none'"/>
+          <field name="restaurant_partner_id" optional="show" invisible="event_type != 'meal'"/>
+          <field name="price_member" optional="show" invisible="pricing_mode == 'free'"/>
+          <field
+            name="price_guest"
+            optional="show"
+            invisible="pricing_mode == 'free' or registration_mode not in ('members_and_guests', 'open')"
+          />
+          <field
+            name="price_children"
+            optional="show"
+            invisible="pricing_mode == 'free' or registration_mode not in ('members_and_children', 'open')"
+          />
+          <field name="active" optional="hide"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista calendario -->
+    <record id="comparsa_event_view_calendar" model="ir.ui.view">
+      <field name="name">comparsa.event.view.calendar</field>
+      <field name="model">comparsa.event</field>
+      <field name="arch" type="xml">
+        <calendar string="Actos" date_start="date" color="event_type" mode="month"
+          quick_create="False" event_limit="5">
+          <field name="event_type"/>
+          <field name="registration_mode"/>
+        </calendar>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_event_view_form" model="ir.ui.view">
+      <field name="name">comparsa.event.view.form</field>
+      <field name="model">comparsa.event</field>
+      <field name="arch" type="xml">
+        <form string="Acto">
+          <sheet>
+            <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+            <field name="active" invisible="True"/>
+
+            <div class="oe_title">
+              <label for="event_category_id"/>
+              <h1>
+                <field name="event_category_id" string="Nombre" placeholder="Nombre del acto"/>
+              </h1>
+              <label for="date"/>
+              <h2>
+                <field name="date"/>
+              </h2>
+            </div>
+
+            <group>
+              <group string="Acto">
+                <field name="event_type" readonly="True"/>
+                <field name="registration_mode"/>
+              </group>
+              <group string="Precio" invisible="registration_mode == 'none'">
+                <field name="pricing_mode"/>
+                <field name="price_member" invisible="pricing_mode == 'free'"/>
+                <field
+                  name="price_guest"
+                  invisible="pricing_mode == 'free' or registration_mode not in ('members_and_guests', 'open')"
+                />
+                <field
+                  name="price_children"
+                  invisible="pricing_mode == 'free' or registration_mode not in ('members_and_children', 'open')"
+                />
+              </group>
+            </group>
+
+            <!-- Campos exclusivos de comidas -->
+            <group string="Comida" invisible="event_type != 'meal'">
+              <group>
+                <field name="restaurant_partner_id"/>
+              </group>
+              <group>
+                <field name="menu"/>
+              </group>
+            </group>
+
+            <notebook>
+              <!-- Inscripciones: solo cuando el evento las admite -->
+              <page string="Inscripciones" name="registrations"
+                invisible="registration_mode == 'none'">
+                <field name="registration_ids">
+                  <list editable="bottom">
+                    <field name="member_id"/>
+                    <field name="guest_partner_id"/>
+                    <field name="invited_by_member_id"
+                      invisible="not guest_partner_id"/>
+                    <field name="state" widget="badge"
+                      decoration-success="state == 'confirmed'"
+                      decoration-danger="state == 'cancelled'"
+                    />
+                  </list>
+                </field>
+              </page>
+
+              <!-- Escuadras: solo en actos festivos -->
+              <page string="Escuadras" name="squads"
+                invisible="event_type != 'festive'">
+                <field name="squad_event_ids">
+                  <list editable="bottom">
+                    <field name="order"/>
+                    <field name="squad_id"/>
+                    <field name="band_partner_id"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>

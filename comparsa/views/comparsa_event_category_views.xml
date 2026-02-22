@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_event_category_view_search" model="ir.ui.view">
+      <field name="name">comparsa.event.category.view.search</field>
+      <field name="model">comparsa.event.category</field>
+      <field name="arch" type="xml">
+        <search string="Buscar categorías">
+          <field name="name"/>
+          <filter string="Festivos" name="filter_festivos" domain="[('type', '=', 'festive')]"/>
+          <filter string="Comidas" name="filter_comidas" domain="[('type', '=', 'meal')]"/>
+          <filter string="Internos" name="filter_internos" domain="[('type', '=', 'internal')]"/>
+          <separator/>
+          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
+          <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
+          <group>
+            <filter string="Tipo" name="group_by_type" context="{'group_by': 'type'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_event_category_view_list" model="ir.ui.view">
+      <field name="name">comparsa.event.category.view.list</field>
+      <field name="model">comparsa.event.category</field>
+      <field name="arch" type="xml">
+        <list string="Categorías de acto">
+          <field name="name"/>
+          <field name="type"/>
+          <field name="active" optional="hide"/>
+        </list>
+      </field>
+    </record>
+
+
+    <!-- Vista formulario -->
+    <record id="comparsa_event_category_view_form" model="ir.ui.view">
+      <field name="name">comparsa.event.category.view.form</field>
+      <field name="model">comparsa.event.category</field>
+      <field name="arch" type="xml">
+        <form string="Categoría de acto">
+          <sheet>
+            <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+            <field name="active" invisible="True"/>
+            <div class="oe_title">
+              <label for="name"/>
+              <h1>
+                <field name="name" placeholder="Nombre de la categoría"/>
+              </h1>
+            </div>
+            <group>
+              <group>
+                <field name="type"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>

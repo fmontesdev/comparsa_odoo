@@ -4,7 +4,7 @@
 
     <!-- Acción para comparsistas -->
     <record id="comparsa_member_action" model="ir.actions.act_window">
-      <field name="name">Lista de Miembros</field>
+      <field name="name">Miembros</field>
       <field name="res_model">comparsa.member</field>
       <field name="view_mode">list,kanban,form</field>
       <field name="context">{'search_default_filter_activos': 1}</field>
@@ -70,17 +70,47 @@
       </field>
     </record>
 
+    <!-- Acción para actos -->
+    <record id="comparsa_event_action" model="ir.actions.act_window">
+      <field name="name">Actos</field>
+      <field name="res_model">comparsa.event</field>
+      <field name="view_mode">list,calendar,form</field>
+      <field name="context">{'search_default_filter_activos': 1}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea el primer acto
+        </p>
+      </field>
+    </record>
+
+    <!-- Acción para categorías de acto -->
+    <record id="comparsa_event_category_action" model="ir.actions.act_window">
+      <field name="name">Categorías</field>
+      <field name="res_model">comparsa.event.category</field>
+      <field name="view_mode">list,form</field>
+      <field name="context">{'search_default_filter_activos': 1}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea la primera categoría de acto
+        </p>
+      </field>
+    </record>
+
     <!-- Menús -->
     <menuitem id="comparsa_menu_root" name="Comparsa">
-      <menuitem id="comparsa_first_menu" name="Miembros">
+      <menuitem id="comparsa_menu_members" name="Miembros" sequence="10">
         <menuitem id="comparsa_menu_member_list" action="comparsa_member_action"/>
-      </menuitem>
-      <menuitem id="comparsa_menu_config" name="Configuración">
         <menuitem id="comparsa_menu_squad" action="comparsa_squad_action"/>
         <menuitem id="comparsa_menu_regime" action="comparsa_regime_action"/>
         <menuitem id="comparsa_menu_role" action="comparsa_role_action"/>
         <menuitem id="comparsa_menu_role_assignment" action="comparsa_role_assignment_action"/>
       </menuitem>
+      <menuitem id="comparsa_menu_events" name="Actos" sequence="20">
+        <menuitem id="comparsa_menu_event_list" action="comparsa_event_action"/>
+        <menuitem id="comparsa_menu_event_category" action="comparsa_event_category_action"/>
+      </menuitem>
+      <!-- <menuitem id="comparsa_menu_config" name="Configuración" sequence="90">
+      </menuitem> -->
     </menuitem>
 
   </data>

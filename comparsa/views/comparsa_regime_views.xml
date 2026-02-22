@@ -71,7 +71,7 @@
                   <list>
                     <field name="date"/>
                     <field name="event_type"/>
-                    <field name="event_subtype_id" string="Acto"/>
+                    <field name="event_category_id" string="Acto"/>
                   </list>
                 </field>
               </page>
