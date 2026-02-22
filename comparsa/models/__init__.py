@@ -5,7 +5,7 @@ from . import comparsa_squad
 from . import comparsa_role
 from . import comparsa_role_assignment
 from . import comparsa_event
-from . import comparsa_event_subtype
+from . import comparsa_event_category
 from . import comparsa_event_registration
 from . import comparsa_squad_event
 from . import comparsa_charge

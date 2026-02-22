@@ -6,6 +6,7 @@ class ComparsaEvent(models.Model):
   #Nombre y descripcion del modelo de datos
   _name = "comparsa.event"
   _description = "Acto de la comparsa"
+  _rec_name = "event_category_id"
   _order = "date desc, id desc"
 
   company_id = fields.Many2one(
@@ -16,35 +17,38 @@ class ComparsaEvent(models.Model):
     index=True,
   )
 
-  # Tipo de acto: festivo, comida, interno
-  event_type = fields.Selection(
-    selection=[("festive", "Festivo"), ("meal", "Comida"), ("internal", "Interno")],
-    string="Tipo de acto",
-    required=True,
-    index=True,
-  )
-
-  # Subtipo de acto, que depende del tipo
-  # No permite borrar un subtipo si hay eventos que lo usan
-  event_subtype_id = fields.Many2one(
-    comodel_name="comparsa.event.subtype",
-    string="Subtipo de acto",
+  # Categoría del acto (catálogo configurable que incluye su clasificación)
+  # No permite borrar una categoría si hay eventos que la usan
+  event_category_id = fields.Many2one(
+    comodel_name="comparsa.event.category",
+    string="Categoría",
     required=True,
     index=True,
     ondelete="restrict",
   )
 
+  # Calculado a partir de la categoría — almacenado para filtros y vistas
+  # Hereda selection y etiquetas de comparsa.event.category.type
+  event_type = fields.Selection(
+    related="event_category_id.type",
+    string="Tipo de acto",
+    store=True,
+    index=True,
+  )
+
   date = fields.Datetime(
-    string="Fecha",
+    string="Fecha/Hora",
     required=True,
     index=True
   )
 
   registration_mode = fields.Selection(
     selection=[
-      ("none", "No"),
-      ("members_only", "Solo miembros"),
-      ("members_and_guests", "Miembros y invitados"),
+      ("none",                "Sin inscripción"),
+      ("members_only",        "Solo miembros"),
+      ("members_and_children","Miembros y niños"),
+      ("members_and_guests",  "Miembros e invitados"),
+      ("open",                "Miembros, invitados y niños"),
     ],
     string="Modo de inscripción",
     required=True,
@@ -73,27 +77,38 @@ class ComparsaEvent(models.Model):
   menu = fields.Text(string="Menú")
   active = fields.Boolean(string="Activo", default=True)
 
+  registration_ids = fields.One2many(
+    comodel_name="comparsa.event.registration",
+    inverse_name="event_id",
+    string="Inscripciones",
+  )
+
+  squad_event_ids = fields.One2many(
+    comodel_name="comparsa.squad.event",
+    inverse_name="event_id",
+    string="Escuadras",
+  )
+
+  _MODES_WITH_GUESTS   = {"members_and_guests", "open"}
+  _MODES_WITH_CHILDREN = {"members_and_children", "open"}
+
   @api.constrains("pricing_mode", "registration_mode", "price_member", "price_guest", "price_children")
   def _check_prices(self):
     for rec in self:
+      if rec.registration_mode == "none" and rec.pricing_mode != "free":
+        raise ValidationError("El modo de precio debe ser gratuito cuando el acto no tiene inscripción.")
       if rec.pricing_mode == "free":
         if rec.price_member != 0.0 or rec.price_guest != 0.0 or rec.price_children != 0.0:
           raise ValidationError("Los precios deben ser 0 cuando el modo de precio es gratuito.")
       elif rec.pricing_mode == "fixed":
-        if rec.price_member <= 0 or rec.price_children <= 0:
-          raise ValidationError("El precio para miembro e infantil debe ser mayor que 0 cuando el modo de precio es fijo.")
-        # Solo validamos precios de invitado si el evento admite invitados
-        if rec.registration_mode == "members_and_guests":
-          if rec.price_guest <= 0:
-            raise ValidationError("El precio de invitado debe ser mayor que 0 cuando el evento admite invitados y el modo de precio es fijo.")
+        if rec.registration_mode != "none" and rec.price_member <= 0:
+          raise ValidationError("El precio de miembro debe ser mayor que 0 cuando el modo de precio es fijo.")
+        if rec.registration_mode in self._MODES_WITH_CHILDREN and rec.price_children <= 0:
+          raise ValidationError("El precio infantil debe ser mayor que 0 para este modo de inscripción con precio fijo.")
+        if rec.registration_mode in self._MODES_WITH_GUESTS and rec.price_guest <= 0:
+          raise ValidationError("El precio de invitado debe ser mayor que 0 para este modo de inscripción con precio fijo.")
 
-  @api.constrains("event_type", "event_subtype_id")
-  def _check_subtype_matches_type(self):
-    for rec in self:
-      if rec.event_subtype_id and rec.event_subtype_id.type != rec.event_type:
-        raise ValidationError("El tipo de evento del subtipo debe coincidir con el tipo de evento")
-
-  @api.constrains("event_type", "restaurant_partner_id", "menu")
+  @api.constrains("event_category_id", "restaurant_partner_id", "menu")
   def _check_meal_fields(self):
     for rec in self:
       if rec.event_type != "meal" and (rec.restaurant_partner_id or rec.menu):
