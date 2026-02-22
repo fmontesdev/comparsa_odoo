@@ -14,4 +14,13 @@ class ComparsaRole(models.Model):
   )
 
   description = fields.Text(string="Descripción")
+
+  # Duración del cargo en años
+  # Al crear una asignación: inicio = 1 sep año actual, fin = 31 ago (año actual + duración)
+  duration_years = fields.Integer(
+    string="Duración (años)",
+    default=1,
+    help="Número de años del mandato. Se usa para calcular las fechas por defecto al crear una asignación.",
+  )
+
   active = fields.Boolean(string="Activo", default=True)
