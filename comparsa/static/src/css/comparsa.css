@@ -1,0 +1,84 @@
+/* Ribbon de archivado: tamaño reducido para no desbordar en formularios pequeños */
+.o_form_view .o_widget_web_ribbon .ribbon {
+  --Ribbon-wrapper-width: 6.9rem;
+}
+
+.o_form_view .o_widget_web_ribbon .ribbon span {
+  --Ribbon-font-size: 0.7rem;
+  /* Centrar el texto en la diagonal: pivote en (0,0) del cuadrado */
+  --Ribbon-top-position: -1.75rem; /* = -font-size * 2.5 = -height */
+  --Ribbon-left-position: 0rem;    /* elimina el offset de sombra */
+}
+
+/* Avatar circular en vista kanban y formulario */
+.o_kanban_record .o_field_image img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 2px;
+}
+
+.o_form_view .o_field_image.oe_avatar img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Avatar en cabecera del formulario de miembro */
+.o_form_view .o_field_image.comparsa-avatar-header {
+  flex-shrink: 0;
+}
+
+/* Cabecera del formulario de miembro: foto + nombre en fila */
+.o_form_view .comparsa-member-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.o_form_view .comparsa-member-title {
+  flex-grow: 1;
+}
+
+/* Avatar circular en vista lista */
+.o_list_view .o_image_cell .o_field_image img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Centrado vertical del contenido de cada fila de la lista */
+.o_list_view .o_data_row td.o_data_cell {
+  vertical-align: middle;
+}
+
+/* Layout horizontal de la tarjeta kanban: imagen izquierda, datos derecha */
+article.o_kanban_record {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 12px;
+}
+
+article.o_kanban_record aside {
+  flex-shrink: 0;
+}
+
+article.o_kanban_record main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Espacio entre el régimen y el badge de plan de pago */
+article.o_kanban_record main .text-muted {
+  margin-bottom: 3px;
+}
+
+/* Columnas kanban más estrechas */
+.o_kanban_renderer.o_kanban_grouped .o_kanban_group {
+  width: 350px !important;
+  min-width: 300px !important;
+  max-width: 350px !important;
+  flex: 0 0 350px !important;
+}

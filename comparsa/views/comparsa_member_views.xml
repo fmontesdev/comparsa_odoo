@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista de búsqueda -->
+    <record id="comparsa_member_view_search" model="ir.ui.view">
+      <field name="name">comparsa.member.view.search</field>
+      <field name="model">comparsa.member</field>
+      <field name="arch" type="xml">
+        <search string="Buscar comparsistas">
+          <field name="name"/>
+          <field name="squad_id"/>
+          <field name="regime_type_id"/>
+          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
+          <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
+          <group>
+            <filter string="Escuadra" name="group_by_squad" context="{'group_by': 'squad_id'}"/>
+            <filter string="Régimen" name="group_by_regime" context="{'group_by': 'regime_type_id'}"/>
+            <filter string="Plan de pago" name="group_by_payment" context="{'group_by': 'payment_plan'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_member_view_list" model="ir.ui.view">
+      <field name="name">comparsa.member.view.list</field>
+      <field name="model">comparsa.member</field>
+      <field name="arch" type="xml">
+        <list string="Miembros">
+          <field name="image_128" widget="image" optional="show" string="Foto"/>
+          <field name="name"/>
+          <field name="squad_id"/>
+          <field name="regime_type_id"/>
+          <field name="payment_plan" widget="badge"
+            decoration-info="payment_plan == 'monthly'"
+            decoration-success="payment_plan == 'yearly'"
+          />
+          <field name="email" optional="hide"/>
+          <field name="phone" optional="hide"/>
+          <field name="active" optional="hide"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_member_view_form" model="ir.ui.view">
+      <field name="name">comparsa.member.view.form</field>
+      <field name="model">comparsa.member</field>
+      <field name="arch" type="xml">
+        <form string="Miembro">
+          <header>
+            <!-- sin flujo de estado de momento, solo botón de archivo -->
+          </header>
+
+          <sheet>
+            <!-- Ribbon de estado (archivado) -->
+            <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+            <field name="active" invisible="True"/>
+            
+            <!-- Sección superior: foto + nombre -->
+            <div class="comparsa-member-header">
+              <field name="image_1920" widget="image" class="oe_avatar comparsa-avatar-header"/>
+              <div class="oe_title comparsa-member-title">
+                <label for="name"/>
+                <h1>
+                  <field name="name" placeholder="Nombre completo"/>
+                </h1>
+              </div>
+            </div>
+
+            <!-- Datos básicos -->
+            <group>
+              <group string="Datos de la comparsa">
+                <field name="squad_id"/>
+                <field name="regime_type_id"/>
+                <field name="payment_plan"/>
+              </group>
+              <group string="Contacto">
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="street"/>
+                <field name="city"/>
+                <field name="zip"/>
+              </group>
+            </group>
+
+            <!-- Pestaña de cargos -->
+            <notebook>
+              <page string="Cargos" name="role_assignments">
+                <field name="role_assignment_ids">
+                  <list editable="bottom">
+                    <field name="role_id"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Vista kanban -->
+    <record id="comparsa_member_view_kanban" model="ir.ui.view">
+      <field name="name">comparsa.member.view.kanban</field>
+      <field name="model">comparsa.member</field>
+      <field name="arch" type="xml">
+        <kanban default_group_by="squad_id">
+          <field name="name"/>
+          <field name="squad_id"/>
+          <field name="regime_type_id"/>
+          <field name="image_128"/>
+          <field name="payment_plan"/>
+          <templates>
+            <t t-name="card">
+              <aside>
+                <field name="image_128" widget="image"/>
+              </aside>
+              <main>
+                <strong><field name="name"/></strong>
+                <div class="text-muted">
+                  <field name="regime_type_id"/>
+                </div>
+                <div>
+                  <field name="payment_plan" widget="badge"
+                    decoration-info="payment_plan == 'monthly'"
+                    decoration-success="payment_plan == 'yearly'"
+                  />
+                </div>
+              </main>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+  </data>
+</odoo>

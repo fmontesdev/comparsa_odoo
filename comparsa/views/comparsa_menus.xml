@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Acción para comparsistas -->
+    <record id="comparsa_member_action" model="ir.actions.act_window">
+      <field name="name">Lista de Miembros</field>
+      <field name="res_model">comparsa.member</field>
+      <field name="view_mode">list,kanban,form</field>
+      <field name="context">{'search_default_filter_activos': 1}</field>
+      <!-- Mensaje para cuando no hay miembros -->
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea el primer miembro
+        </p>
+      </field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="comparsa_menu_root" name="Comparsa">
+      <menuitem id="comparsa_first_menu" name="Miembros">
+        <menuitem id="comparsa_menu_member_list" action="comparsa_member_action"/>
+      </menuitem>
+    </menuitem>
+
+  </data>
+</odoo>

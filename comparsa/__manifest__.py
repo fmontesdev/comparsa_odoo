@@ -30,6 +30,13 @@ Funcionalidades principales:
     # Seguridad — grupos primero, después accesos
     'security/res_groups.xml',
     'security/ir.model.access.csv',
-    # Vistas (pendiente)
+    # Vistas
+    'views/comparsa_menus.xml',
+    'views/comparsa_member_views.xml',
   ],
+  'assets': {
+    'web.assets_backend': [
+      'comparsa/static/src/css/comparsa.css',
+    ],
+  },
 }
