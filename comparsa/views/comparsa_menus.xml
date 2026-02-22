@@ -44,6 +44,32 @@
       </field>
     </record>
 
+    <!-- Acción para cargos -->
+    <record id="comparsa_role_action" model="ir.actions.act_window">
+      <field name="name">Cargos</field>
+      <field name="res_model">comparsa.role</field>
+      <field name="view_mode">list,form</field>
+      <field name="context">{'search_default_filter_activos': 1}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea el primer cargo
+        </p>
+      </field>
+    </record>
+
+    <!-- Acción para asignaciones de cargo -->
+    <record id="comparsa_role_assignment_action" model="ir.actions.act_window">
+      <field name="name">Asignaciones de cargos</field>
+      <field name="res_model">comparsa.role.assignment</field>
+      <field name="view_mode">list,form</field>
+      <field name="context">{'search_default_filter_vigentes': 1}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Asigna el primer cargo a un miembro
+        </p>
+      </field>
+    </record>
+
     <!-- Menús -->
     <menuitem id="comparsa_menu_root" name="Comparsa">
       <menuitem id="comparsa_first_menu" name="Miembros">
@@ -52,6 +78,8 @@
       <menuitem id="comparsa_menu_config" name="Configuración">
         <menuitem id="comparsa_menu_squad" action="comparsa_squad_action"/>
         <menuitem id="comparsa_menu_regime" action="comparsa_regime_action"/>
+        <menuitem id="comparsa_menu_role" action="comparsa_role_action"/>
+        <menuitem id="comparsa_menu_role_assignment" action="comparsa_role_assignment_action"/>
       </menuitem>
     </menuitem>
 

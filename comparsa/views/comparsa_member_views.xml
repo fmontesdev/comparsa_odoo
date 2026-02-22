@@ -85,10 +85,11 @@
               </group>
             </group>
 
-            <!-- Pestaña de cargos -->
+            <!-- Pestaña de cargos, solo muestra las asignaciones vigentes -->
             <notebook>
               <page string="Cargos" name="role_assignments">
-                <field name="role_assignment_ids">
+                <field name="role_assignment_ids"
+                  domain="[('date_end', '&gt;=', context_today().strftime('%Y-%m-%d'))]">
                   <list editable="bottom">
                     <field name="role_id"/>
                     <field name="date_start"/>

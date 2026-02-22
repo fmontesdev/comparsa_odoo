@@ -35,6 +35,8 @@ Funcionalidades principales:
     'views/comparsa_member_views.xml',
     'views/comparsa_squad_views.xml',
     'views/comparsa_regime_views.xml',
+    'views/comparsa_role_views.xml',
+    'views/comparsa_role_assignment_views.xml',
   ],
   'assets': {
     'web.assets_backend': [

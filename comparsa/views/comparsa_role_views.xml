@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_role_view_search" model="ir.ui.view">
+      <field name="name">comparsa.role.view.search</field>
+      <field name="model">comparsa.role</field>
+      <field name="arch" type="xml">
+        <search string="Buscar cargos">
+          <field name="name"/>
+          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
+          <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_role_view_list" model="ir.ui.view">
+      <field name="name">comparsa.role.view.list</field>
+      <field name="model">comparsa.role</field>
+      <field name="arch" type="xml">
+        <list string="Cargos">
+          <field name="name"/>
+          <field name="duration_years"/>
+          <field name="description"/>
+          <field name="active" optional="hide"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_role_view_form" model="ir.ui.view">
+      <field name="name">comparsa.role.view.form</field>
+      <field name="model">comparsa.role</field>
+      <field name="arch" type="xml">
+        <form string="Cargo">
+          <sheet>
+            <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+            <field name="active" invisible="True"/>
+            <div class="oe_title">
+              <label for="name"/>
+              <h1>
+                <field name="name" placeholder="Nombre del cargo"/>
+              </h1>
+            </div>
+            <group>
+              <group>
+                <field name="duration_years"/>
+              </group>
+              <group/>
+            </group>
+            <group>
+              <field name="description" placeholder="Descripción del cargo"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>

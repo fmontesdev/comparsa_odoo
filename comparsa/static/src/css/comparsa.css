@@ -10,6 +10,19 @@
   --Ribbon-left-position: 0rem;    /* elimina el offset de sombra */
 }
 
+/* Cabecera de formularios con dos títulos en la misma línea */
+.o_form_view .comparsa-title-row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.o_form_view .comparsa-title-col {
+  flex: 1;
+  min-width: 0;
+}
+
 /* Avatar circular en vista kanban y formulario */
 .o_kanban_record .o_field_image img {
   width: 64px;

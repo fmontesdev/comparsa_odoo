@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_role_assignment_view_search" model="ir.ui.view">
+      <field name="name">comparsa.role.assignment.view.search</field>
+      <field name="model">comparsa.role.assignment</field>
+      <field name="arch" type="xml">
+        <search string="Buscar asignaciones">
+          <field name="member_id"/>
+          <field name="role_id"/>
+          <filter
+            string="Vigentes"
+            name="filter_vigentes"
+            domain="[('date_end', '&gt;=', context_today().strftime('%Y-%m-%d'))]"
+          />
+          <filter
+            string="Finalizadas"
+            name="filter_finalizadas"
+            domain="[('date_end', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+          />
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_role_assignment_view_list" model="ir.ui.view">
+      <field name="name">comparsa.role.assignment.view.list</field>
+      <field name="model">comparsa.role.assignment</field>
+      <field name="arch" type="xml">
+        <list string="Asignaciones de cargo">
+          <field name="role_id"/>
+          <field name="member_id"/>
+          <field name="date_start"/>
+          <field name="date_end"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_role_assignment_view_form" model="ir.ui.view">
+      <field name="name">comparsa.role.assignment.view.form</field>
+      <field name="model">comparsa.role.assignment</field>
+      <field name="arch" type="xml">
+        <form string="Asignación de cargo">
+          <sheet>
+            <div class="comparsa-title-row">
+              <div class="oe_title comparsa-title-col">
+                <label for="role_id"/>
+                <h1>
+                  <field name="role_id" placeholder="Cargo"/>
+                </h1>
+              </div>
+              <div class="oe_title comparsa-title-col">
+                <label for="member_id"/>
+                <h1>
+                  <field name="member_id" placeholder="Miembro"/>
+                </h1>
+              </div>
+            </div>
+
+            <group>
+              <group>
+                <field name="date_start"/>
+              </group>
+              <group>
+                <field name="date_end"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>
