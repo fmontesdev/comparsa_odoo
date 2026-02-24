@@ -59,7 +59,20 @@ class ComparsaCharge(models.Model):
   )
 
   period_key = fields.Char(string="Clave de periodo", index=True)  # monthly: YYYY-MM, yearly: YYYY, single: NULL
-  amount_total = fields.Float(string="Importe total", required=True)
+
+  # Líneas de desglose del cobro (concepto, cantidad, precio unitario)
+  line_ids = fields.One2many(
+    comodel_name="comparsa.charge.line",
+    inverse_name="charge_id",
+    string="Líneas",
+  )
+
+  # Importe total calculado a partir de las líneas
+  amount_total = fields.Float(
+    string="Importe total",
+    compute="_compute_amount_total",
+    store=True,
+  )
 
   state = fields.Selection(
     selection=[
@@ -84,6 +97,12 @@ class ComparsaCharge(models.Model):
     copy=False,
   )
 
+  # Cálculo del importe total a partir de las líneas
+  @api.depends("line_ids.subtotal")
+  def _compute_amount_total(self):
+    for rec in self:
+      rec.amount_total = sum(rec.line_ids.mapped("subtotal"))
+
   @api.constrains("member_id", "charge_type_id", "periodicity", "period_key", "state")
   def _check_no_duplicate_period(self):
     """Evita cargos duplicados para monthly/yearly excluyendo cancelados."""
@@ -100,12 +119,6 @@ class ComparsaCharge(models.Model):
       ]
       if self.search_count(domain):
         raise ValidationError("Ya existe un cargo activo para este miembro, tipo y periodo.")
-
-  @api.constrains("amount_total")
-  def _check_amount_total(self):
-    for rec in self:
-      if rec.amount_total <= 0:
-        raise ValidationError("El importe del cargo debe ser mayor que 0.")
 
   @api.constrains("periodicity", "period_key")
   def _check_period_key(self):
@@ -157,10 +170,22 @@ class ComparsaCharge(models.Model):
         raise ValidationError("Este cargo ya tiene una factura asociada.")
       if rec.state == "cancelled":
         raise ValidationError("No se puede facturar un cargo cancelado.")
+      if not rec.line_ids:
+        raise ValidationError("El cobro no tiene líneas de detalle. Añade al menos una línea.")
       if not rec.charge_type_id.account_id:
         raise ValidationError(
-          f"El tipo de cargo '{rec.charge_type_id.name}' no tiene cuenta contable configurada."
+          f"El tipo de cobro '{rec.charge_type_id.name}' no tiene cuenta contable configurada."
         )
+
+      account = rec.charge_type_id.account_id
+      invoice_lines = []
+      for line in rec.line_ids:
+        invoice_lines.append((0, 0, {
+          "name": line.name,
+          "quantity": line.quantity,
+          "price_unit": line.price_unit,
+          "account_id": account.id,
+        }))
 
       partner = rec.member_id.partner_id
       invoice = self.env["account.move"].create({
@@ -170,13 +195,7 @@ class ComparsaCharge(models.Model):
         "invoice_date": fields.Date.today(),
         "narration": f"Cargo: {rec.charge_type_id.name}"
                      + (f" — {rec.period_key}" if rec.period_key else ""),
-        "invoice_line_ids": [(0, 0, {
-          "name": rec.charge_type_id.name
-                  + (f" ({rec.period_key})" if rec.period_key else ""),
-          "quantity": 1,
-          "price_unit": rec.amount_total,
-          "account_id": rec.charge_type_id.account_id.id,
-        })],
+        "invoice_line_ids": invoice_lines,
       })
       rec.invoice_id = invoice
       rec.state = "invoiced"

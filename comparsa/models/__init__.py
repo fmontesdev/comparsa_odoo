@@ -10,5 +10,6 @@ from . import comparsa_event_registration
 from . import comparsa_event_guest
 from . import comparsa_squad_event
 from . import comparsa_charge
+from . import comparsa_charge_line
 from . import comparsa_charge_type
 from . import comparsa_account_move
