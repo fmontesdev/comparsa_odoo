@@ -39,6 +39,13 @@ class ComparsaRoleAssignment(models.Model):
     index=True
   )
 
+  # Campo calculado para mostrar el nombre del cargo y del miembro
+  def _compute_display_name(self):
+    for rec in self:
+      role = rec.role_id.display_name or "?"
+      member = rec.member_id.display_name or "?"
+      rec.display_name = f"{role} – {member}"
+
   _uniq_role_assignment = models.Constraint(
     'UNIQUE(role_id, date_start, date_end)',
     'Ya existe una asignación para este cargo con las mismas fechas de inicio y fin.',
