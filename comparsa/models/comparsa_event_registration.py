@@ -76,6 +76,13 @@ class ComparsaEventRegistration(models.Model):
     store=True,
   )
 
+  # Total de plazas: miembro + pareja + niños + invitados
+  total_attendees = fields.Integer(
+    string="Total plazas",
+    compute="_compute_total_attendees",
+    store=True,
+  )
+
   # Cálculo de guest_count y guest_names a partir de guest_ids
   @api.depends("guest_ids", "guest_ids.partner_id")
   def _compute_guest_count(self):
@@ -83,6 +90,12 @@ class ComparsaEventRegistration(models.Model):
       rec.guest_count = len(rec.guest_ids)
       names = [g.partner_id.name for g in rec.guest_ids]
       rec.guest_names = ", ".join(names) if names else False
+
+  # Cálculo del total de asistentes para una inscripción
+  @api.depends("with_partner", "num_children", "guest_count")
+  def _compute_total_attendees(self):
+    for rec in self:
+      rec.total_attendees = 1 + (1 if rec.with_partner else 0) + rec.num_children + rec.guest_count
 
   # Campo calculado para mostrar como nombre visible de la inscripción el nombre del evento y miembro
   def _compute_display_name(self):

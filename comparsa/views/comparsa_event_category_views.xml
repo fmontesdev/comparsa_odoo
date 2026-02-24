@@ -35,6 +35,23 @@
     </record>
 
 
+    <!-- Vista kanban -->
+    <record id="comparsa_event_category_view_kanban" model="ir.ui.view">
+      <field name="name">comparsa.event.category.view.kanban</field>
+      <field name="model">comparsa.event.category</field>
+      <field name="arch" type="xml">
+        <kanban string="Categorías de acto" default_group_by="type">
+          <field name="name"/>
+          <field name="type"/>
+          <templates>
+            <t t-name="card">
+              <field name="name" class="fw-bold fs-6"/>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
     <!-- Vista formulario -->
     <record id="comparsa_event_category_view_form" model="ir.ui.view">
       <field name="name">comparsa.event.category.view.form</field>

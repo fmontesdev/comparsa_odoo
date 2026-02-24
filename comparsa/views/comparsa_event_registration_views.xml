@@ -42,11 +42,36 @@
           <field name="with_partner" widget="boolean_toggle" readonly="1"/>
           <field name="num_children"/>
           <field name="guest_names" string="Invitados" optional="show"/>
+          <field name="total_attendees" string="Plazas"/>
           <field name="state" widget="badge"
             decoration-success="state == 'confirmed'"
             decoration-danger="state == 'cancelled'"
           />
         </list>
+      </field>
+    </record>
+
+    <!-- Vista kanban -->
+    <record id="comparsa_event_registration_view_kanban" model="ir.ui.view">
+      <field name="name">comparsa.event.registration.view.kanban</field>
+      <field name="model">comparsa.event.registration</field>
+      <field name="arch" type="xml">
+        <kanban string="Inscripciones" default_group_by="event_id">
+          <field name="member_id"/>
+          <field name="total_attendees"/>
+          <templates>
+            <t t-name="card">
+              <div class="d-flex justify-content-between align-items-start w-100">
+                <field name="member_id" class="fw-bold flex-grow-1"/>
+                <span class="badge rounded-pill text-bg-success ms-2 flex-shrink-0">
+                  <t t-esc="record.total_attendees.value"/>
+                  <t t-if="record.total_attendees.value == 1"> plaza</t>
+                  <t t-else=""> plazas</t>
+                </span>
+              </div>
+            </t>
+          </templates>
+        </kanban>
       </field>
     </record>
 
