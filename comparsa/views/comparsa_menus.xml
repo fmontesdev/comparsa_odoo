@@ -55,7 +55,7 @@
 
     <!-- Acción para asignaciones de cargo -->
     <record id="comparsa_role_assignment_action" model="ir.actions.act_window">
-      <field name="name">Asignaciones de cargos</field>
+      <field name="name">Asignaciones de Cargos</field>
       <field name="res_model">comparsa.role.assignment</field>
       <field name="view_mode">list,form</field>
       <field name="context">{'search_default_filter_vigentes': 1}</field>
@@ -91,6 +91,19 @@
       </field>
     </record>
 
+    <!-- Acción para logística de escuadras -->
+    <record id="comparsa_squad_event_action" model="ir.actions.act_window">
+      <field name="name">Logística de Escuadras</field>
+      <field name="res_model">comparsa.squad.event</field>
+      <field name="view_mode">list,kanban,form</field>
+      <field name="context">{'search_default_filter_vigentes': 1}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Asigna escuadras a un acto festivo
+        </p>
+      </field>
+    </record>
+
     <!-- Acción para inscripciones -->
     <record id="comparsa_event_registration_action" model="ir.actions.act_window">
       <field name="name">Inscripciones</field>
@@ -117,9 +130,10 @@
         <menuitem id="comparsa_menu_role_assignment" action="comparsa_role_assignment_action"/>
       </menuitem>
       <menuitem id="comparsa_menu_events" name="Actos" sequence="20">
-        <menuitem id="comparsa_menu_event_list" action="comparsa_event_action"/>
-        <menuitem id="comparsa_menu_event_category" action="comparsa_event_category_action"/>
-        <menuitem id="comparsa_menu_event_registration" action="comparsa_event_registration_action"/>
+        <menuitem id="comparsa_menu_event_list" action="comparsa_event_action" sequence="10"/>
+        <menuitem id="comparsa_menu_event_category" action="comparsa_event_category_action" sequence="20"/>
+        <menuitem id="comparsa_menu_squad_event" action="comparsa_squad_event_action" sequence="30"/>
+        <menuitem id="comparsa_menu_event_registration" action="comparsa_event_registration_action" sequence="40"/>
       </menuitem>
       <!-- <menuitem id="comparsa_menu_config" name="Configuración" sequence="90">
       </menuitem> -->

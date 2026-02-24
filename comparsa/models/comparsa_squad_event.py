@@ -39,6 +39,13 @@ class ComparsaSquadEvent(models.Model):
     ondelete="restrict",
   )
 
+  # Campo calculado para mostrar el nombre del acto y de la escuadra
+  def _compute_display_name(self):
+    for rec in self:
+      event = rec.event_id.display_name or "?"
+      squad = rec.squad_id.display_name or "?"
+      rec.display_name = f"{event} – {squad}"
+
   _uniq_event_squad = models.Constraint('UNIQUE(event_id, squad_id)', 'Una escuadra solo puede aparecer una vez por evento')
   _uniq_event_order = models.Constraint('UNIQUE(event_id, order)', 'El orden debe ser único dentro del evento')
 

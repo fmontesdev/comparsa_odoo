@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_squad_event_view_search" model="ir.ui.view">
+      <field name="name">comparsa.squad.event.view.search</field>
+      <field name="model">comparsa.squad.event</field>
+      <field name="arch" type="xml">
+        <search string="Buscar logística de escuadras">
+          <field name="event_id"/>
+          <field name="squad_id"/>
+          <field name="band_partner_id"/>
+          <filter string="Vigentes" name="filter_vigentes"
+            domain="[('event_id.date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+          <filter string="Finalizados" name="filter_finalizados"
+            domain="[('event_id.date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+          <separator/>
+          <group>
+            <filter string="Acto" name="group_by_event" context="{'group_by': 'event_id'}"/>
+            <filter string="Escuadra" name="group_by_squad" context="{'group_by': 'squad_id'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_squad_event_view_list" model="ir.ui.view">
+      <field name="name">comparsa.squad.event.view.list</field>
+      <field name="model">comparsa.squad.event</field>
+      <field name="arch" type="xml">
+        <list string="Logística de escuadras">
+          <field name="event_id"/>
+          <field name="order"/>
+          <field name="squad_id"/>
+          <field name="band_partner_id"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista kanban -->
+    <record id="comparsa_squad_event_view_kanban" model="ir.ui.view">
+      <field name="name">comparsa.squad.event.view.kanban</field>
+      <field name="model">comparsa.squad.event</field>
+      <field name="arch" type="xml">
+        <kanban string="Logística de escuadras" default_group_by="event_id">
+          <field name="squad_id"/>
+          <field name="order"/>
+          <field name="band_partner_id"/>
+          <templates>
+            <t t-name="card">
+              <div class="d-flex justify-content-between align-items-start w-100">
+                <span class="badge rounded-pill text-bg-secondary me-2 flex-shrink-0">
+                  <t t-esc="record.order.value"/>
+                </span>
+                <field name="squad_id" class="fw-bold flex-grow-1"/>
+              </div>
+              <div t-if="record.band_partner_id.value" class="mt-1 small" style="font-size:0.85em">
+                <i class="fa fa-music me-2 text-muted"/>
+                <field name="band_partner_id" class="text-muted"/>
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_squad_event_view_form" model="ir.ui.view">
+      <field name="name">comparsa.squad.event.view.form</field>
+      <field name="model">comparsa.squad.event</field>
+      <field name="arch" type="xml">
+        <form string="Logística de escuadra">
+          <sheet>
+            <div class="oe_title">
+              <label for="event_id"/>
+              <h1>
+                <field name="event_id" placeholder="Acto"
+                  domain="[('event_type', '=', 'festive')]"/>
+              </h1>
+            </div>
+            <group>
+              <group string="Logística">
+                <field name="squad_id"/>
+                <field name="order"/>
+              </group>
+              <group string="Información adicional">
+                <field name="band_partner_id"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>
