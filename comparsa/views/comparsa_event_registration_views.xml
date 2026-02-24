@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_event_registration_view_search" model="ir.ui.view">
+      <field name="name">comparsa.event.registration.view.search</field>
+      <field name="model">comparsa.event.registration</field>
+      <field name="arch" type="xml">
+        <search string="Buscar inscripciones">
+          <field name="event_id"/>
+          <field name="member_id"/>
+          <filter string="Confirmadas" name="filter_confirmed" domain="[('state', '=', 'confirmed')]"/>
+          <filter string="Canceladas" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
+          <separator/>
+          <filter string="Vigentes" name="filter_vigentes"
+            domain="[('event_id.date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+          <filter string="Finalizadas" name="filter_pasados"
+            domain="[('event_id.date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+          <separator/>
+          <filter string="Con pareja" name="filter_with_partner" domain="[('with_partner', '=', True)]"/>
+          <filter string="Con niños" name="filter_with_children" domain="[('num_children', '>', 0)]"/>
+          <filter string="Con invitados" name="filter_with_guests" domain="[('guest_count', '>', 0)]"/>
+          <group>
+            <filter string="Acto" name="group_by_event" context="{'group_by': 'event_id'}"/>
+            <filter string="Tipo de acto" name="group_by_event_type" context="{'group_by': 'event_type'}"/>
+            <filter string="Miembro" name="group_by_member" context="{'group_by': 'member_id'}"/>
+            <filter string="Estado" name="group_by_state" context="{'group_by': 'state'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_event_registration_view_list" model="ir.ui.view">
+      <field name="name">comparsa.event.registration.view.list</field>
+      <field name="model">comparsa.event.registration</field>
+      <field name="arch" type="xml">
+        <list string="Inscripciones">
+          <field name="event_id"/>
+          <field name="member_id"/>
+          <field name="with_partner" widget="boolean_toggle" readonly="1"/>
+          <field name="num_children"/>
+          <field name="guest_names" string="Invitados" optional="show"/>
+          <field name="state" widget="badge"
+            decoration-success="state == 'confirmed'"
+            decoration-danger="state == 'cancelled'"
+          />
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_event_registration_view_form" model="ir.ui.view">
+      <field name="name">comparsa.event.registration.view.form</field>
+      <field name="model">comparsa.event.registration</field>
+      <field name="arch" type="xml">
+        <form string="Inscripción">
+          <header>
+            <button string="Confirmar" name="action_confirm" type="object"
+              invisible="state == 'confirmed'"
+              class="btn-primary"/>
+            <button string="Cancelar inscripción" name="action_cancel" type="object"
+              invisible="state == 'cancelled'"
+              confirm="¿Cancelar esta inscripción?"/>
+            <field name="state" widget="statusbar"
+              statusbar_visible="confirmed,cancelled"/>
+          </header>
+          <sheet>
+            <div class="oe_title">
+              <label for="event_id"/>
+              <h1>
+                <!-- Solo eventos que permiten inscripciones -->
+                <field name="event_id" placeholder="Acto" domain="[('registration_mode', '!=', 'none')]"/>
+              </h1>
+              <label for="member_id"/>
+              <h2>
+                <field name="member_id" placeholder="Miembro"/>
+              </h2>
+            </div>
+
+            <field name="registration_mode" invisible="1"/>
+
+            <group>
+              <group string="Asistencia">
+                <field name="with_partner"/>
+                <field name="num_children"
+                  invisible="registration_mode not in ('members_and_children', 'open')"/>
+              </group>
+            </group>
+
+            <field name="guest_ids" string="Invitados"
+              invisible="registration_mode not in ('members_and_guests', 'open')">
+              <list editable="bottom">
+                <field name="partner_id" placeholder="Buscar contacto o seleccionar Anónimo…"/>
+              </list>
+            </field>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>

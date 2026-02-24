@@ -13,7 +13,11 @@
           <filter string="Comidas" name="filter_comidas" domain="[('event_type', '=', 'meal')]"/>
           <filter string="Internos" name="filter_internos" domain="[('event_type', '=', 'internal')]"/>
           <separator/>
-          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
+          <filter string="Vigentes" name="filter_vigentes"
+            domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+          <filter string="Finalizados" name="filter_pasados"
+            domain="[('date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+          <separator/>
           <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
           <group>
             <filter string="Tipo" name="group_by_type" context="{'group_by': 'event_type'}"/>
@@ -121,12 +125,14 @@
               <!-- Inscripciones: solo cuando el evento las admite -->
               <page string="Inscripciones" name="registrations"
                 invisible="registration_mode == 'none'">
-                <field name="registration_ids">
-                  <list editable="bottom">
+                <field name="registration_ids" form_view_ref="comparsa.comparsa_event_registration_view_form">
+                  <list readonly="1" delete="0">
                     <field name="member_id"/>
-                    <field name="guest_partner_id"/>
-                    <field name="invited_by_member_id"
-                      invisible="not guest_partner_id"/>
+                    <field name="with_partner" widget="boolean_toggle" readonly="1"/>
+                    <field name="num_children"
+                      invisible="parent.registration_mode not in ('members_and_children', 'open')"/>
+                    <field name="guest_names" string="Invitados"
+                      invisible="parent.registration_mode not in ('members_and_guests', 'open')"/>
                     <field name="state" widget="badge"
                       decoration-success="state == 'confirmed'"
                       decoration-danger="state == 'cancelled'"
