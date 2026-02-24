@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_charge_type_search" model="ir.ui.view">
+      <field name="name">comparsa.charge.type.search</field>
+      <field name="model">comparsa.charge.type</field>
+      <field name="arch" type="xml">
+        <search string="Tipos de cobro">
+          <field name="name" string="Nombre"/>
+          <field name="code" string="Código"/>
+          <separator/>
+          <filter name="filter_archivados"
+                  string="Archivados"
+                  domain="[('active', '=', False)]"/>
+
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+
+    <record id="comparsa_charge_type_list" model="ir.ui.view">
+      <field name="name">comparsa.charge.type.list</field>
+      <field name="model">comparsa.charge.type</field>
+      <field name="arch" type="xml">
+        <list string="Tipos de cobro">
+          <field name="name" string="Nombre"/>
+          <field name="code" string="Código"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_charge_type_form" model="ir.ui.view">
+      <field name="name">comparsa.charge.type.form</field>
+      <field name="model">comparsa.charge.type</field>
+      <field name="arch" type="xml">
+        <form string="Tipo de cobro">
+          <sheet>
+            <widget name="web_ribbon"
+                    title="Archivado"
+                    bg_color="text-bg-danger"
+                    invisible="active"/>
+            <div class="oe_title">
+              <label for="name"/>
+              <h1><field name="name" placeholder="Nombre del tipo de cobro…"/></h1>
+            </div>
+            <group>
+              <field name="code" string="Código"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>

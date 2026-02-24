@@ -41,6 +41,7 @@ Funcionalidades principales:
     'views/comparsa_event_category_views.xml',
     'views/comparsa_event_registration_views.xml',
     'views/comparsa_squad_event_views.xml',
+    'views/comparsa_charge_type_views.xml',
   ],
   'assets': {
     'web.assets_backend': [

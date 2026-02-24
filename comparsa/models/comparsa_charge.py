@@ -172,19 +172,13 @@ class ComparsaCharge(models.Model):
         raise ValidationError("No se puede facturar un cargo cancelado.")
       if not rec.line_ids:
         raise ValidationError("El cobro no tiene líneas de detalle. Añade al menos una línea.")
-      if not rec.charge_type_id.account_id:
-        raise ValidationError(
-          f"El tipo de cobro '{rec.charge_type_id.name}' no tiene cuenta contable configurada."
-        )
 
-      account = rec.charge_type_id.account_id
       invoice_lines = []
       for line in rec.line_ids:
         invoice_lines.append((0, 0, {
           "name": line.name,
           "quantity": line.quantity,
           "price_unit": line.price_unit,
-          "account_id": account.id,
         }))
 
       partner = rec.member_id.partner_id
