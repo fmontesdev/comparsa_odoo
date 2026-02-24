@@ -9,7 +9,6 @@
       <field name="arch" type="xml">
         <search string="Buscar escuadras">
           <field name="name"/>
-          <filter string="Activas" name="filter_activas" domain="[('active', '=', True)]"/>
           <filter string="Archivadas" name="filter_archivadas" domain="[('active', '=', False)]"/>
         </search>
       </field>

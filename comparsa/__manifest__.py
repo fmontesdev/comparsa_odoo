@@ -39,6 +39,7 @@ Funcionalidades principales:
     'views/comparsa_role_assignment_views.xml',
     'views/comparsa_event_views.xml',
     'views/comparsa_event_category_views.xml',
+    'views/comparsa_event_registration_views.xml',
   ],
   'assets': {
     'web.assets_backend': [

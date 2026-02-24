@@ -9,7 +9,6 @@
       <field name="arch" type="xml">
         <search string="Buscar regímenes">
           <field name="name"/>
-          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
           <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
         </search>
       </field>

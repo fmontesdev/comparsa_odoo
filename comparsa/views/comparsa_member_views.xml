@@ -11,7 +11,6 @@
           <field name="name"/>
           <field name="squad_id"/>
           <field name="regime_type_id"/>
-          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
           <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
           <group>
             <filter string="Escuadra" name="group_by_squad" context="{'group_by': 'squad_id'}"/>

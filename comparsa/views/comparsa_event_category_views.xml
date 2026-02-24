@@ -13,7 +13,6 @@
           <filter string="Comidas" name="filter_comidas" domain="[('type', '=', 'meal')]"/>
           <filter string="Internos" name="filter_internos" domain="[('type', '=', 'internal')]"/>
           <separator/>
-          <filter string="Activos" name="filter_activos" domain="[('active', '=', True)]"/>
           <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
           <group>
             <filter string="Tipo" name="group_by_type" context="{'group_by': 'type'}"/>
