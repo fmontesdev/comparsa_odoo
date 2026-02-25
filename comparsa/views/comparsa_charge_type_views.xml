@@ -14,20 +14,24 @@
           <filter name="filter_archivados"
                   string="Archivados"
                   domain="[('active', '=', False)]"/>
-
+          <group>
+            <filter name="group_by_periodicity"
+                    string="Periodicidad"
+                    context="{'group_by': 'periodicity'}"/>
+          </group>
         </search>
       </field>
     </record>
 
     <!-- Vista lista -->
-
     <record id="comparsa_charge_type_list" model="ir.ui.view">
       <field name="name">comparsa.charge.type.list</field>
       <field name="model">comparsa.charge.type</field>
       <field name="arch" type="xml">
         <list string="Tipos de cobro">
-          <field name="name" string="Nombre"/>
-          <field name="code" string="Código"/>
+          <field name="name"/>
+          <field name="code"/>
+          <field name="periodicity"/>
         </list>
       </field>
     </record>
@@ -48,7 +52,9 @@
               <h1><field name="name" placeholder="Nombre del tipo de cobro…"/></h1>
             </div>
             <group>
-              <field name="code" string="Código"/>
+              <field name="code"/>
+              <field name="periodicity"/>
+              <!-- <field name="product_id"/> -->
             </group>
           </sheet>
         </form>

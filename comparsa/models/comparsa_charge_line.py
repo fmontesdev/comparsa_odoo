@@ -16,15 +16,18 @@ class ComparsaChargeLine(models.Model):
   )
 
   name = fields.Char(string="Concepto", required=True)
-
   quantity = fields.Integer(string="Cantidad", required=True, default=1)
-
   price_unit = fields.Float(string="Precio unitario", required=True, default=0.0)
 
   subtotal = fields.Float(
     string="Subtotal",
     compute="_compute_subtotal",
     store=True,
+  )
+
+  currency_id = fields.Many2one(
+    related="charge_id.currency_id",
+    string="Moneda",
   )
 
   @api.depends("quantity", "price_unit")

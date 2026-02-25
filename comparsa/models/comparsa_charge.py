@@ -51,11 +51,9 @@ class ComparsaCharge(models.Model):
   )
 
   periodicity = fields.Selection(
-    selection=[("monthly", "Mensual"), ("yearly", "Anual"), ("single", "Único")],
+    related="charge_type_id.periodicity",
     string="Periodicidad",
-    required=True,
-    default="single",
-    index=True,
+    store=True,
   )
 
   period_key = fields.Char(string="Clave de periodo", index=True)  # monthly: YYYY-MM, yearly: YYYY, single: NULL
@@ -88,6 +86,12 @@ class ComparsaCharge(models.Model):
     index=True,
   )
 
+  currency_id = fields.Many2one(
+    related="company_id.currency_id",
+    string="Moneda",
+    readonly=True,
+  )
+
   # Enlace a la factura de Odoo generada para este cargo
   invoice_id = fields.Many2one(
     "account.move",
@@ -103,9 +107,9 @@ class ComparsaCharge(models.Model):
     for rec in self:
       rec.amount_total = sum(rec.line_ids.mapped("subtotal"))
 
-  @api.constrains("member_id", "charge_type_id", "periodicity", "period_key", "state")
+  @api.constrains("member_id", "charge_type_id", "period_key", "state")
   def _check_no_duplicate_period(self):
-    """Evita cargos duplicados para monthly/yearly excluyendo cancelados."""
+    """Evita cargos duplicados para monthly/yearly excluyendo cancelados"""
     for rec in self:
       if rec.periodicity not in ("monthly", "yearly") or not rec.period_key:
         continue
@@ -118,20 +122,20 @@ class ComparsaCharge(models.Model):
         ("id", "!=", rec.id),
       ]
       if self.search_count(domain):
-        raise ValidationError("Ya existe un cargo activo para este miembro, tipo y periodo.")
+        raise ValidationError("Ya existe un cargo activo para este miembro, tipo y periodo")
 
-  @api.constrains("periodicity", "period_key")
+  @api.constrains("charge_type_id", "period_key")
   def _check_period_key(self):
     for rec in self:
       if rec.periodicity == "single" and rec.period_key:
-        raise ValidationError("period_key debe estar vacío para los cargos únicos.")
+        raise ValidationError("Clave de período debe estar vacío para los cargos únicos")
       if rec.periodicity in ("monthly", "yearly") and not rec.period_key:
-        raise ValidationError("period_key es obligatorio para los cargos mensuales/anuales.")
+        raise ValidationError("Clave de período es obligatoria para los cargos mensuales/anuales")
 
-  # Para periodicity=single => period_key=NULL. PostgreSQL no garantiza unicidad con NULL = NULL, por eso se usa esta validación a nivel Python
-  @api.constrains("member_id", "charge_type_id", "periodicity", "event_id", "registration_id", "state")
+  # Para periodicity = single -> period_key = NULL. PostgreSQL no garantiza unicidad con NULL = NULL, por eso se usa esta validación a nivel Python
+  @api.constrains("member_id", "charge_type_id", "event_id", "registration_id", "state")
   def _check_no_duplicate_single(self):
-    """UNIQUE SQL no cubre NULL=NULL; protegemos los cargos single por Python."""
+    """UNIQUE SQL no cubre NULL=NULL; protegemos los cargos single por Python"""
     for rec in self:
       if rec.periodicity != "single":
         continue
@@ -145,17 +149,17 @@ class ComparsaCharge(models.Model):
         ("id", "!=", rec.id),
       ]
       if self.search_count(domain):
-        raise ValidationError("Ya existe un cargo único para este miembro, tipo y evento.")
+        raise ValidationError("Ya existe un cargo único para este miembro, tipo y evento")
 
   @api.constrains("registration_id", "event_id")
   def _check_event_matches_registration(self):
     for rec in self:
       if rec.registration_id and rec.event_id and rec.registration_id.event_id != rec.event_id:
-        raise ValidationError("event_id debe coincidir con registration_id.event_id cuando ambos están establecidos.")
+        raise ValidationError("event_id debe coincidir con registration_id.event_id cuando ambos están establecidos")
 
   @api.constrains("state", "invoice_id")
   def _check_cancel_with_invoice(self):
-    """Impide cancelar un cargo que ya tiene una factura activa en contabilidad."""
+    """Impide cancelar un cargo que ya tiene una factura activa en contabilidad"""
     for rec in self:
       if rec.state == "cancelled" and rec.invoice_id and rec.invoice_id.state != "cancel":
         raise ValidationError(
@@ -164,31 +168,36 @@ class ComparsaCharge(models.Model):
         )
 
   def action_create_invoice(self):
-    """Genera una factura de cliente (account.move) para este cargo y la enlaza."""
+    """Genera una factura de cliente (account.move) para este cargo y la enlaza"""
     for rec in self:
       if rec.invoice_id:
-        raise ValidationError("Este cargo ya tiene una factura asociada.")
+        raise ValidationError("Este cargo ya tiene una factura asociada")
       if rec.state == "cancelled":
-        raise ValidationError("No se puede facturar un cargo cancelado.")
+        raise ValidationError("No se puede facturar un cargo cancelado")
       if not rec.line_ids:
-        raise ValidationError("El cobro no tiene líneas de detalle. Añade al menos una línea.")
+        raise ValidationError("El cobro no tiene líneas de detalle. Añade al menos una línea")
 
+      # Construir las líneas de la factura
+      # Si el tipo de cobro tiene producto, Odoo rellena impuestos y cuenta automáticamente
+      # Si no, Odoo usa la cuenta por defecto del diario de ventas (proporcionada por l10n_es)
       invoice_lines = []
       for line in rec.line_ids:
-        invoice_lines.append((0, 0, {
+        line_vals = {
           "name": line.name,
           "quantity": line.quantity,
           "price_unit": line.price_unit,
-        }))
+        }
+        if rec.charge_type_id.product_id:
+          line_vals["product_id"] = rec.charge_type_id.product_id.id
+        invoice_lines.append((0, 0, line_vals))
 
-      partner = rec.member_id.partner_id
       invoice = self.env["account.move"].create({
         "move_type": "out_invoice",
-        "partner_id": partner.id,
+        "partner_id": rec.member_id.partner_id.id,
         "company_id": rec.company_id.id,
         "invoice_date": fields.Date.today(),
         "narration": f"Cargo: {rec.charge_type_id.name}"
-                     + (f" — {rec.period_key}" if rec.period_key else ""),
+                    + (f" — {rec.period_key}" if rec.period_key else ""),
         "invoice_line_ids": invoice_lines,
       })
       rec.invoice_id = invoice
@@ -203,3 +212,26 @@ class ComparsaCharge(models.Model):
         "view_mode": "form",
         "target": "current",
       }
+
+  def action_open_invoice(self):
+    """Abre la factura asociada a este cobro."""
+    self.ensure_one()
+    if not self.invoice_id:
+      return
+    return {
+      "type": "ir.actions.act_window",
+      "res_model": "account.move",
+      "res_id": self.invoice_id.id,
+      "view_mode": "form",
+      "target": "current",
+    }
+
+  def action_cancel(self):
+    """Cancela el cobro si no tiene factura activa."""
+    for rec in self:
+      if rec.invoice_id and rec.invoice_id.state != "cancel":
+        raise ValidationError(
+          "No se puede cancelar un cobro con una factura activa. "
+          "Cancela primero la factura en contabilidad."
+        )
+      rec.state = "cancelled"

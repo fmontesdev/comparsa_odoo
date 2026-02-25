@@ -24,7 +24,7 @@ Funcionalidades principales:
   'application': True,
   'installable': True,
   # Indicamos lista de módulos necesarios para que este funcione correctamente
-  'depends': ['base', 'account'],
+  'depends': ['base', 'account', 'l10n_es'],
   # Carga los archivos para la política de seguridad (grupos y accesos) y las vistas
   'data': [
     # Seguridad — grupos primero, después accesos
@@ -42,6 +42,7 @@ Funcionalidades principales:
     'views/comparsa_event_registration_views.xml',
     'views/comparsa_squad_event_views.xml',
     'views/comparsa_charge_type_views.xml',
+    'views/comparsa_charge_views.xml',
   ],
   'assets': {
     'web.assets_backend': [

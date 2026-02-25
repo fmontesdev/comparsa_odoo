@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista búsqueda -->
+    <record id="comparsa_charge_search" model="ir.ui.view">
+      <field name="name">comparsa.charge.search</field>
+      <field name="model">comparsa.charge</field>
+      <field name="arch" type="xml">
+        <search string="Cobros">
+          <field name="member_id" string="Miembro"/>
+          <field name="charge_type_id" string="Tipo de cobro"/>
+          <field name="period_key" string="Periodo"/>
+          <field name="event_id" string="Acto"/>
+          <separator/>
+          <filter
+            name="filter_pending"
+            string="Pendientes"
+            domain="[('state', '=', 'pending')]"
+          />
+          <filter
+            name="filter_invoiced"
+            string="Facturados"
+            domain="[('state', 'in', ['invoiced', 'partial'])]"
+          />
+          <filter
+            name="filter_paid"
+            string="Pagados"
+            domain="[('state', '=', 'paid')]"
+          />
+          <filter
+            name="filter_cancelled"
+            string="Cancelados"
+            domain="[('state', '=', 'cancelled')]"
+          />
+          <separator/>
+          <filter
+            name="filter_no_invoice"
+            string="Sin factura"
+            domain="[('invoice_id', '=', False), ('state', '!=', 'cancelled')]"
+          />
+          <filter
+            name="filter_monthly"
+            string="Mensuales"
+            domain="[('periodicity', '=', 'monthly')]"
+          />
+          <filter
+            name="filter_annual"
+            string="Anuales"
+            domain="[('periodicity', '=', 'annual')]"
+          />
+          <filter
+            name="filter_single"
+            string="Únicos"
+            domain="[('periodicity', '=', 'single')]"
+          />
+          <group>
+            <filter
+              name="group_by_member"
+              string="Miembro"
+              context="{'group_by': 'member_id'}"
+            />
+            <filter
+              name="group_by_charge_type"
+              string="Tipo de cobro"
+              context="{'group_by': 'charge_type_id'}"
+            />
+            <filter
+              name="group_by_state"
+              string="Estado"
+              context="{'group_by': 'state'}"
+            />
+            <filter
+              name="group_by_periodicity"
+              string="Periodicidad"
+              context="{'group_by': 'periodicity'}"
+            />
+            <filter
+              name="group_by_period"
+              string="Periodo"
+              context="{'group_by': 'period_key'}"
+            />
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="comparsa_charge_list" model="ir.ui.view">
+      <field name="name">comparsa.charge.list</field>
+      <field name="model">comparsa.charge</field>
+      <field name="arch" type="xml">
+        <list
+          string="Cobros"
+          decoration-success="state == 'paid'"
+          decoration-info="state == 'invoiced'"
+          decoration-warning="state in ('pending', 'partial')"
+          decoration-muted="state == 'cancelled'"
+        >
+          <field name="member_id"/>
+          <field name="charge_type_id" string="Tipo"/>
+          <field name="periodicity" optional="hide"/>
+          <field name="period_key" optional="show"/>
+          <field name="event_id" optional="show"/>
+          <field
+            name="amount_total"
+            string="Importe"
+            widget="monetary"
+            options="{'currency_field': 'currency_id'}"
+          />
+          <field
+            name="state"
+            widget="badge"
+            decoration-success="state == 'paid'"
+            decoration-info="state == 'invoiced'"
+            decoration-warning="state in ('pending', 'partial')"
+            decoration-danger="state == 'cancelled'"
+          />
+          <field name="invoice_id" string="Factura" optional="show"/>
+          <!-- Campo necesario para el widget monetary -->
+          <field name="currency_id" column_invisible="1"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_charge_form" model="ir.ui.view">
+      <field name="name">comparsa.charge.form</field>
+      <field name="model">comparsa.charge</field>
+      <field name="arch" type="xml">
+        <form string="Cobro">
+          <header>
+            <button
+              name="action_create_invoice"
+              string="Generar factura"
+              type="object"
+              class="btn-primary"
+              invisible="invoice_id or state == 'cancelled'"
+              confirm="¿Generar factura para este cobro?"
+            />
+            <button
+              name="action_open_invoice"
+              string="Ver factura"
+              type="object"
+              invisible="not invoice_id"
+            />
+            <button
+              name="action_cancel"
+              string="Cancelar cobro"
+              type="object"
+              invisible="state == 'cancelled'"
+              confirm="¿Cancelar este cobro? Esta acción no se puede deshacer"
+            />
+            <field name="state" widget="statusbar" statusbar_visible="pending,invoiced,paid"/>
+          </header>
+          
+          <sheet>
+            <group>
+              <group string="Identificación">
+                <field name="member_id"/>
+                <field name="charge_type_id"/>
+                <field name="periodicity" readonly="1"/>
+                <field
+                  name="period_key"
+                  invisible="periodicity == 'single'"
+                  placeholder="ej. 2026-02 o 2026"
+                />
+              </group>
+
+              <group string="Acto" invisible="not event_id">
+                <field name="event_id"/>
+                <!-- Solo registros relacionados con el evento seleccionado -->
+                <field
+                  name="registration_id" string="Inscripción"
+                  domain="[('event_id', '=', event_id)]"
+                />
+              </group>
+            </group>
+
+            <group>
+              <group string="Facturación">
+                <field name="invoice_id" invisible="not invoice_id" readonly="1"/>
+                <field
+                  name="amount_total"
+                  widget="monetary"
+                  options="{'currency_field': 'currency_id'}"
+                  readonly="1"
+                />
+                <!-- Campo necesario para el widget monetary -->
+                <field name="currency_id" invisible="1"/>
+              </group>
+            </group>
+
+            <notebook>
+              <page string="Conceptos" name="lines">
+                <field name="line_ids">
+                  <list editable="bottom">
+                    <field name="name"/>
+                    <field name="quantity"/>
+                    <field
+                      name="price_unit"
+                      widget="monetary"
+                      options="{'currency_field': 'currency_id'}"
+                    />
+                    <field
+                      name="subtotal"
+                      widget="monetary"
+                      options="{'currency_field': 'currency_id'}"
+                      readonly="1"
+                    />
+                    <!-- Campo necesario para el widget monetary -->
+                    <field name="currency_id" column_invisible="1"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>
