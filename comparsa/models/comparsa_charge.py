@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import date as Date
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -251,3 +252,76 @@ class ComparsaCharge(models.Model):
           "Cancela primero la factura en facturación."
         )
       rec.state = "cancelled"
+
+  # Cron para generación automática de cuotas el día 1 de cada mes (configurado en data/comparsa_cron.xml)
+  # En septiembre genera también las cuotas anuales
+  def _cron_generate_fees(self):
+    today = Date.today()
+    fee_type = "both" if today.month == 9 else "monthly"
+    self._generate_fees(month=today.month, year=today.year, fee_type=fee_type)
+
+  # Generación de cuotas periódicas para los miembros activos
+  def _generate_fees(self, month, year, fee_type="both"):
+    Charge = self.env["comparsa.charge"]
+    charge_type_mes = self.env["comparsa.charge.type"].search([("code", "=", "CUOTA_MES")], limit=1)
+    charge_type_ano = self.env["comparsa.charge.type"].search([("code", "=", "CUOTA_ANO")], limit=1)
+
+    period_monthly = f"{year:04d}-{month:02d}"
+    period_yearly  = str(year)
+
+    members = self.env["comparsa.member"].search([("active", "=", True)])
+    created = skipped = 0
+
+    for member in members:
+
+      # CUOTA MENSUAL 
+      if fee_type in ("monthly", "both") and member.payment_plan == "monthly" and charge_type_mes:
+        # Verifica si ya existe una cuota para este miembro, tipo y periodo (excluyendo canceladas)
+        exists = Charge.search_count([
+          ("member_id",       "=", member.id),
+          ("charge_type_id",  "=", charge_type_mes.id),
+          ("period_key",      "=", period_monthly),
+          ("state",           "!=", "cancelled"),
+        ])
+        if exists:
+          skipped += 1
+        else:
+          Charge.create({
+            "company_id":      member.company_id.id,
+            "member_id":       member.id,
+            "charge_type_id":  charge_type_mes.id,
+            "period_key":      period_monthly,
+            "line_ids": [(0, 0, {
+              "name":       f"Cuota mensual {period_monthly}",
+              "quantity":   1,
+              "price_unit": member.regime_type_id.monthly_amount,
+            })],
+          })
+          created += 1
+
+      # CUOTA ANUAL
+      if fee_type in ("yearly", "both") and member.payment_plan == "yearly" and charge_type_ano:
+        # Verifica si ya existe una cuota para este miembro, tipo y periodo (excluyendo canceladas)
+        exists = Charge.search_count([
+          ("member_id",       "=", member.id),
+          ("charge_type_id",  "=", charge_type_ano.id),
+          ("period_key",      "=", period_yearly),
+          ("state",           "!=", "cancelled"),
+        ])
+        if exists:
+          skipped += 1
+        else:
+          Charge.create({
+            "company_id":      member.company_id.id,
+            "member_id":       member.id,
+            "charge_type_id":  charge_type_ano.id,
+            "period_key":      period_yearly,
+            "line_ids": [(0, 0, {
+              "name":       f"Cuota anual {period_yearly}",
+              "quantity":   1,
+              "price_unit": member.regime_type_id.yearly_amount,
+            })],
+          })
+          created += 1
+
+    return {"created": created, "skipped": skipped}
