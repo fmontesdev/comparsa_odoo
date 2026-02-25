@@ -30,8 +30,9 @@ Funcionalidades principales:
     # Seguridad — grupos primero, después accesos
     'security/res_groups.xml',
     'security/ir.model.access.csv',
-    # Vistas
-    'views/comparsa_menus.xml',
+    # Datos iniciales
+    'data/comparsa_cron.xml',
+    # Vistas — menus.xml al final porque referencia acciones de otros XMLs
     'views/comparsa_member_views.xml',
     'views/comparsa_squad_views.xml',
     'views/comparsa_regime_views.xml',
@@ -43,6 +44,8 @@ Funcionalidades principales:
     'views/comparsa_squad_event_views.xml',
     'views/comparsa_charge_type_views.xml',
     'views/comparsa_charge_views.xml',
+    'views/comparsa_charge_generation_wizard_views.xml',
+    'views/comparsa_menus.xml',
   ],
   'assets': {
     'web.assets_backend': [

@@ -12,3 +12,4 @@ access_squad_event,comparsa.squad.event,model_comparsa_squad_event,base.group_us
 access_charge_type,comparsa.charge.type,model_comparsa_charge_type,base.group_user,1,1,1,1
 access_charge,comparsa.charge,model_comparsa_charge,base.group_user,1,1,1,1
 access_charge_line,comparsa.charge.line,model_comparsa_charge_line,base.group_user,1,1,1,1
+access_charge_generation_wizard,comparsa.charge.generation.wizard,model_comparsa_charge_generation_wizard,base.group_user,1,1,1,1

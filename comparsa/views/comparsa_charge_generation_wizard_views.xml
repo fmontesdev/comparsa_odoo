@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista formulario -->
+    <record id="comparsa_charge_generation_wizard_view_form" model="ir.ui.view">
+      <field name="name">comparsa.charge.generation.wizard.form</field>
+      <field name="model">comparsa.charge.generation.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Generar cuotas periódicas">
+          <sheet>
+            <!-- Parámetros de generación — visibles solo en estado borrador -->
+            <group string="Periodo" invisible="state == 'done'">
+              <field name="target_month"/>
+              <field name="target_year"/>
+            </group>
+            
+            <group string="Tipo de cuota" invisible="state == 'done'">
+              <field name="fee_type" widget="radio"/>
+            </group>
+
+            <!-- Resultado — visible tras generar -->
+            <group string="Resultado" invisible="state == 'draft'">
+              <field name="result_created"/>
+              <field name="result_skipped"/>
+            </group>
+          </sheet>
+
+          <footer>
+            <button string="Generar" name="action_generate" type="object"
+              class="btn-primary" invisible="state == 'done'"/>
+            <button string="Cerrar" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</odoo>
