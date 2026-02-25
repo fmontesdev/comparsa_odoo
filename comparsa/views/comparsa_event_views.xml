@@ -14,9 +14,9 @@
           <filter string="Internos" name="filter_internos" domain="[('event_type', '=', 'internal')]"/>
           <separator/>
           <filter string="Vigentes" name="filter_vigentes"
-            domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+            domain="[('date', '&gt;=', current_date)]"/>
           <filter string="Finalizados" name="filter_pasados"
-            domain="[('date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+            domain="[('date', '&lt;', current_date)]"/>
           <separator/>
           <filter string="Archivados" name="filter_archivados" domain="[('active', '=', False)]"/>
           <group>

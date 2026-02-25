@@ -12,9 +12,9 @@
           <field name="squad_id"/>
           <field name="band_partner_id"/>
           <filter string="Vigentes" name="filter_vigentes"
-            domain="[('event_id.date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+            domain="[('event_id.date', '&gt;=', current_date)]"/>
           <filter string="Finalizados" name="filter_finalizados"
-            domain="[('event_id.date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+            domain="[('event_id.date', '&lt;', current_date)]"/>
           <separator/>
           <group>
             <filter string="Acto" name="group_by_event" context="{'group_by': 'event_id'}"/>

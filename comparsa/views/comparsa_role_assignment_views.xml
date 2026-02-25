@@ -13,12 +13,12 @@
           <filter
             string="Vigentes"
             name="filter_vigentes"
-            domain="[('date_end', '&gt;=', context_today().strftime('%Y-%m-%d'))]"
+            domain="[('date_end', '&gt;=', current_date)]"
           />
           <filter
             string="Finalizadas"
             name="filter_finalizadas"
-            domain="[('date_end', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+            domain="[('date_end', '&lt;', current_date)]"
           />
         </search>
       </field>

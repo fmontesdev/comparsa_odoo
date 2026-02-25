@@ -14,9 +14,9 @@
           <filter string="Canceladas" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
           <separator/>
           <filter string="Vigentes" name="filter_vigentes"
-            domain="[('event_id.date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+            domain="[('event_id.date', '&gt;=', current_date)]"/>
           <filter string="Finalizadas" name="filter_pasados"
-            domain="[('event_id.date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+            domain="[('event_id.date', '&lt;', current_date)]"/>
           <separator/>
           <filter string="Con pareja" name="filter_with_partner" domain="[('with_partner', '=', True)]"/>
           <filter string="Con niños" name="filter_with_children" domain="[('num_children', '>', 0)]"/>
