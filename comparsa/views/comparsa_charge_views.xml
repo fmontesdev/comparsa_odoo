@@ -151,7 +151,7 @@
               invisible="state == 'cancelled'"
               confirm="¿Cancelar este cobro? Esta acción no se puede deshacer"
             />
-            <field name="state" widget="statusbar" statusbar_visible="pending,invoiced,paid"/>
+            <field name="state" widget="statusbar" statusbar_visible="pending,invoiced,partial,paid,cancelled"/>
           </header>
           
           <sheet>
