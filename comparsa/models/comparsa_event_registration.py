@@ -176,6 +176,20 @@ class ComparsaEventRegistration(models.Model):
       if not (allowed_by_default or allowed_by_exception):
         raise ValidationError("El régimen del miembro no permite inscribirse a este evento")
 
+  # Campos internos que siempre se pueden escribir aunque haya cobro
+  _ALWAYS_WRITABLE = {"state", "charge_id"}
+
+  # Validación para evitar modificaciones a una inscripción con cobro generado, excepto para cancelar la inscripción o gestionar el cobro
+  def write(self, vals):
+    if vals.keys() - self._ALWAYS_WRITABLE:
+      for rec in self:
+        if rec.charge_id:
+          raise ValidationError(
+            "No se puede modificar la inscripción porque ya tiene un cobro generado.\n"
+            "Cancela primero el cobro si necesitas hacer cambios."
+          )
+    return super().write(vals)
+
   # Solo crea el cargo automáticamente si el acto tiene modo de precio fijo
   @api.model_create_multi
   def create(self, vals_list):

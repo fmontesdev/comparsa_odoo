@@ -92,6 +92,8 @@
               statusbar_visible="confirmed,cancelled"/>
           </header>
           <sheet>
+            <!-- Cuando hay cobro generado, toda la hoja es de solo lectura -->
+            <field name="charge_id" invisible="1"/>
             <!-- Botón Ver Cobro en barra de control -->
             <div name="button_box" class="oe_button_box">
               <button name="action_open_charge" type="object"
@@ -101,16 +103,16 @@
               </button>
             </div>
             <field name="charge_id" invisible="1"/>
-            
+
             <div class="oe_title">
               <label for="event_id"/>
               <h1>
                 <!-- Solo eventos que permiten inscripciones -->
-                <field name="event_id" placeholder="Acto" domain="[('registration_mode', '!=', 'none')]"/>
+                <field name="event_id" placeholder="Acto" domain="[('registration_mode', '!=', 'none')]" readonly="charge_id"/>
               </h1>
               <label for="member_id"/>
               <h2>
-                <field name="member_id" placeholder="Miembro"/>
+                <field name="member_id" placeholder="Miembro" readonly="charge_id"/>
               </h2>
             </div>
 
@@ -118,14 +120,16 @@
 
             <group>
               <group string="Asistencia">
-                <field name="with_partner"/>
+                <field name="with_partner" readonly="charge_id"/>
                 <field name="num_children"
-                  invisible="registration_mode not in ('members_and_children', 'open')"/>
+                  invisible="registration_mode not in ('members_and_children', 'open')"
+                  readonly="charge_id"/>
               </group>
             </group>
 
             <field name="guest_ids" string="Invitados"
-              invisible="registration_mode not in ('members_and_guests', 'open')">
+              invisible="registration_mode not in ('members_and_guests', 'open')"
+              readonly="charge_id">
               <list editable="bottom">
                 <field name="partner_id" placeholder="Buscar contacto o seleccionar Anónimo…"/>
               </list>

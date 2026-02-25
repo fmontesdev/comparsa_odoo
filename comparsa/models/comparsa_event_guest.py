@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ComparsaEventGuest(models.Model):
@@ -27,3 +28,24 @@ class ComparsaEventGuest(models.Model):
         ondelete="restrict",
         domain="[('is_company', '=', False), ('member_ids', '=', False), ('comparsa_partner_type', 'not in', ['band', 'restaurant'])]",
     )
+
+    # Validación para evitar crear o modificar invitados si el registro de asistencia ya tiene un cobro generado
+    def _check_no_charge(self):
+        for rec in self:
+            if rec.registration_id.charge_id:
+                raise ValidationError(
+                    "No se pueden modificar los invitados porque la inscripción ya tiene un cobro generado.\n"
+                    "Cancela primero el cobro si necesitas hacer cambios."
+                )
+
+    # Al añadir un invitado se valida que no haya un cobro generado
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._check_no_charge()
+        return records
+
+    # Al eliminar un invitado se valida que no haya un cobro generado
+    def unlink(self):
+        self._check_no_charge()
+        return super().unlink()
