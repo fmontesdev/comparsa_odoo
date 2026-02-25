@@ -185,7 +185,7 @@ class ComparsaEventRegistration(models.Model):
         rec._create_charge()
     return records
 
-  # Crea automáticamente el cargo al registrar la inscripción en un acto de pago
+  # Crea el cargo al registrar la inscripción en un acto de pago
   def _create_charge(self):
     self.ensure_one()
     charge_type = self.env["comparsa.charge.type"].search([("code", "=", "ACTO")], limit=1)
