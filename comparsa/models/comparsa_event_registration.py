@@ -83,6 +83,28 @@ class ComparsaEventRegistration(models.Model):
     store=True,
   )
 
+  # Cobro generado al inscribirse en un acto de pago
+  # Many2one + UNIQUE = equivalente a una relación 1:1 (Odoo no tiene campo One2one nativo)
+  charge_id = fields.Many2one(
+    comodel_name="comparsa.charge",
+    string="Cobro",
+    readonly=True,
+    ondelete="set null",
+    copy=False,
+  )
+
+  # Campo calculado para mostrar como nombre visible de la inscripción el nombre del evento y miembro
+  def _compute_display_name(self):
+    for rec in self:
+      event = rec.event_id.display_name or "?"
+      member = rec.member_id.display_name or "?"
+      rec.display_name = f"{event} · {member}"
+
+  _uniq_registration_charge = models.Constraint(
+    "UNIQUE(charge_id)",
+    "Una inscripción solo puede tener un cobro asociado.",
+  )
+
   # Cálculo de guest_count y guest_names a partir de guest_ids
   @api.depends("guest_ids", "guest_ids.partner_id")
   def _compute_guest_count(self):
@@ -97,16 +119,9 @@ class ComparsaEventRegistration(models.Model):
     for rec in self:
       rec.total_attendees = 1 + (1 if rec.with_partner else 0) + rec.num_children + rec.guest_count
 
-  # Campo calculado para mostrar como nombre visible de la inscripción el nombre del evento y miembro
-  def _compute_display_name(self):
-    for rec in self:
-      event = rec.event_id.display_name or "?"
-      member = rec.member_id.display_name or "?"
-      rec.display_name = f"{event} – {member}"
-
+  # Validación para asegurar que un miembro no pueda tener dos inscripciones activas en el mismo evento
   @api.constrains("event_id", "member_id", "state")
   def _check_no_duplicate_member_registration(self):
-    """Un miembro no puede tener dos inscripciones activas en el mismo evento."""
     for rec in self:
       domain = [
         ("event_id", "=", rec.event_id.id),
@@ -117,12 +132,14 @@ class ComparsaEventRegistration(models.Model):
       if self.search_count(domain):
         raise ValidationError("Este miembro ya tiene una inscripción activa en este evento")
 
+  # Validación para asegurar que el número de niños no sea negativo
   @api.constrains("num_children")
   def _check_num_children(self):
     for rec in self:
       if rec.num_children < 0:
         raise ValidationError("El número de niños no puede ser negativo")
 
+  # Validación para asegurar que el modo de inscripción del evento permita el tipo de asistentes registrados
   @api.constrains("event_id", "guest_ids", "num_children")
   def _check_registration_mode(self):
     for rec in self:
@@ -138,13 +155,10 @@ class ComparsaEventRegistration(models.Model):
       if has_children and not allows_children:
         raise ValidationError("Este evento no permite inscribir niños")
 
+  # Validación para asegurar que el régimen del miembro permita inscribirse al evento según su tipo
+  # Permitido si: allow_*_by_default según event_type, o event está en allowed_event_ids del régimen
   @api.constrains("event_id", "member_id")
   def _check_member_permission_by_regime(self):
-    """Permiso por régimen:
-    Permitido si:
-    - allow_*_by_default según event_type
-    - o event está en allowed_event_ids del régimen
-    """
     for rec in self:
       regime = rec.member_id.regime_type_id
       event = rec.event_id
@@ -162,10 +176,86 @@ class ComparsaEventRegistration(models.Model):
       if not (allowed_by_default or allowed_by_exception):
         raise ValidationError("El régimen del miembro no permite inscribirse a este evento")
 
+  # Solo crea el cargo automáticamente si el acto tiene modo de precio fijo
+  @api.model_create_multi
+  def create(self, vals_list):
+    records = super().create(vals_list)
+    for rec in records:
+      if rec.event_id.pricing_mode == "fixed":
+        rec._create_charge()
+    return records
+
+  # Crea automáticamente el cargo al registrar la inscripción en un acto de pago
+  def _create_charge(self):
+    self.ensure_one()
+    charge_type = self.env["comparsa.charge.type"].search([("code", "=", "ACTO")], limit=1)
+    if not charge_type:
+      raise ValidationError(
+        "No se encontró el tipo de cobro con código 'ACTO'. "
+        "Créalo en Configuración → Tipos de cobro."
+      )
+    event = self.event_id
+    lines = [
+      (0, 0, {
+        "name": f"Miembro: {self.member_id.display_name}",
+        "quantity": 1,
+        "price_unit": event.price_member,
+      })
+    ]
+    if self.with_partner:
+      lines.append((0, 0, {
+        "name": "Acompañante",
+        "quantity": 1,
+        "price_unit": event.price_member,
+      }))
+    if self.num_children > 0:
+      lines.append((0, 0, {
+        "name": "Niños",
+        "quantity": self.num_children,
+        "price_unit": event.price_children,
+      }))
+    for guest in self.guest_ids:
+      lines.append((0, 0, {
+        "name": f"Invitado: {guest.partner_id.name}",
+        "quantity": 1,
+        "price_unit": event.price_guest,
+      }))
+    charge = self.env["comparsa.charge"].create({
+      "company_id": event.company_id.id,
+      "member_id": self.member_id.id,
+      "charge_type_id": charge_type.id,
+      "event_id": event.id,
+      "registration_id": self.id,
+      "line_ids": lines,
+    })
+    self.charge_id = charge
+
   # Permite cambiar el estado de la inscripción a confirmado
   def action_confirm(self):
     self.write({"state": "confirmed"})
 
-  # Permite cambiar el estado de la inscripción a cancelado
+  # Abre el cobro asociado a esta inscripción
+  def action_open_charge(self):
+    self.ensure_one()
+    if not self.charge_id:
+      return
+    return {
+      "type": "ir.actions.act_window",
+      "res_model": "comparsa.charge",
+      "res_id": self.charge_id.id,
+      "view_mode": "form",
+      "target": "current",
+    }
+
+  # Cancela la inscripción. Bloquea si el cobro ya está facturado o pagado
   def action_cancel(self):
-    self.write({"state": "cancelled"})
+    for rec in self:
+      if rec.charge_id and rec.charge_id.state != "cancelled":
+        if rec.charge_id.state != "pending":
+          state_label = dict(rec.charge_id._fields["state"].selection).get(rec.charge_id.state, rec.charge_id.state)
+          raise ValidationError(
+            f"No se puede cancelar la inscripción porque el cobro está en estado '{state_label}'.\n"
+            "Gestiona primero el cobro antes de cancelar la inscripción."
+          )
+        rec.charge_id.state = "cancelled"
+      rec.state = "cancelled"

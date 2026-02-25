@@ -92,6 +92,16 @@
               statusbar_visible="confirmed,cancelled"/>
           </header>
           <sheet>
+            <!-- Botón Ver Cobro en barra de control -->
+            <div name="button_box" class="oe_button_box">
+              <button name="action_open_charge" type="object"
+                class="oe_stat_button" icon="fa-money"
+                invisible="not charge_id">
+                <span class="o_stat_text">Ver Cobro</span>
+              </button>
+            </div>
+            <field name="charge_id" invisible="1"/>
+            
             <div class="oe_title">
               <label for="event_id"/>
               <h1>
