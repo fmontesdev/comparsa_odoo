@@ -44,13 +44,14 @@ class ComparsaSquadEvent(models.Model):
     for rec in self:
       event = rec.event_id.display_name or "?"
       squad = rec.squad_id.display_name or "?"
-      rec.display_name = f"{event} – {squad}"
+      rec.display_name = f"{event} · {squad}"
 
   _uniq_event_squad = models.Constraint('UNIQUE(event_id, squad_id)', 'Una escuadra solo puede aparecer una vez por evento')
   _uniq_event_order = models.Constraint('UNIQUE(event_id, order)', 'El orden debe ser único dentro del evento')
 
+  # Validación para asegurar que el acto sea de tipo festivo
   @api.constrains("event_id")
   def _check_event_is_festive(self):
     for rec in self:
       if rec.event_id.event_type != "festive":
-        raise ValidationError("La logística de escuadra solo puede asignarse a actos festivos.")
+        raise ValidationError("La logística de escuadra solo puede asignarse a actos festivos")

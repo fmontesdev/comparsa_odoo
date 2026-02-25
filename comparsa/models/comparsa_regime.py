@@ -58,4 +58,4 @@ class MemberRegimeType(models.Model):
   def _check_amounts(self):
     for rec in self:
       if rec.monthly_amount < 0 or rec.yearly_amount < 0:
-        raise ValidationError("Los montos no pueden ser negativos.")
+        raise ValidationError("Los montos no pueden ser negativos")

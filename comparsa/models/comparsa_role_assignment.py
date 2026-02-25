@@ -48,14 +48,13 @@ class ComparsaRoleAssignment(models.Model):
 
   _uniq_role_assignment = models.Constraint(
     'UNIQUE(role_id, date_start, date_end)',
-    'Ya existe una asignación para este cargo con las mismas fechas de inicio y fin.',
+    'Ya existe una asignación para este cargo con las mismas fechas de inicio y fin',
   )
 
+  # OnChange para calcular fechas a partir de la duración del cargo y el año en curso
+  # inicio = 1 sep año actual, fin = 31 ago (año actual + duración)
   @api.onchange("role_id")
   def _onchange_role_id(self):
-    """Calcula fechas a partir de la duración del cargo y el año en curso.
-    inicio = 1 sep año actual, fin = 31 ago (año actual + duración).
-    """
     if self.role_id and self.role_id.duration_years:
       year = fields.Date.today().year
       self.date_start = date(year, 9, 1)
@@ -66,11 +65,11 @@ class ComparsaRoleAssignment(models.Model):
   def _check_dates(self):
     for rec in self:
       if rec.date_start and rec.date_end and rec.date_start > rec.date_end:
-        raise ValidationError("La fecha de inicio no puede ser posterior a la fecha de fin.")
+        raise ValidationError("La fecha de inicio no puede ser posterior a la fecha de fin")
 
+  # Restricción para validar que no haya más de una asignación activa para el mismo cargo (date_end >= hoy)
   @api.constrains("role_id", "date_start", "date_end")
   def _check_role_not_active(self):
-    """Impide crear una asignación si el cargo ya tiene una vigente (date_end >= hoy)."""
     today = fields.Date.today()
     for rec in self:
       domain = [

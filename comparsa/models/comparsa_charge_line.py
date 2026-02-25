@@ -19,6 +19,7 @@ class ComparsaChargeLine(models.Model):
   quantity = fields.Integer(string="Cantidad", required=True, default=1)
   price_unit = fields.Float(string="Precio unitario", required=True, default=0.0)
 
+  # Campo calculado para el subtotal de la línea
   subtotal = fields.Float(
     string="Subtotal",
     compute="_compute_subtotal",
@@ -30,6 +31,7 @@ class ComparsaChargeLine(models.Model):
     string="Moneda",
   )
 
+  # Calculo del subtotal como cantidad por precio unitario
   @api.depends("quantity", "price_unit")
   def _compute_subtotal(self):
     for rec in self:

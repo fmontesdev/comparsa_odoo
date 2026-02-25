@@ -86,6 +86,7 @@ class ComparsaCharge(models.Model):
     index=True,
   )
 
+  # Divisa heredada de la compañía para facilitar el acceso en las líneas y la factura
   currency_id = fields.Many2one(
     related="company_id.currency_id",
     string="Moneda",
