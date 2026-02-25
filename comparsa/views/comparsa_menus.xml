@@ -153,6 +153,48 @@
       </field>
     </record>
 
+    <!-- Acción para invitados -->
+    <record id="comparsa_event_guest_action" model="ir.actions.act_window">
+      <field name="name">Invitados</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">list,form</field>
+      <field name="domain">[('is_company', '=', False), ('member_ids', '=', False), ('comparsa_partner_type', 'not in', ['band', 'restaurant'])]</field>
+      <field name="context">{'default_is_company': False}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          No hay invitados registrados
+        </p>
+      </field>
+    </record>
+
+    <!-- Acción para bandas de música -->
+    <record id="comparsa_band_action" model="ir.actions.act_window">
+      <field name="name">Bandas de Música</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">list,form</field>
+      <field name="domain">[('comparsa_partner_type', '=', 'band')]</field>
+      <field name="context">{'default_comparsa_partner_type': 'band'}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea la primera banda de música
+        </p>
+      </field>
+    </record>
+
+    <!-- Acción para restaurantes -->
+    <record id="comparsa_restaurant_action" model="ir.actions.act_window">
+      <field name="name">Restaurantes</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">list,form</field>
+      <field name="domain">[('comparsa_partner_type', '=', 'restaurant')]</field>
+      <field name="context">{'default_comparsa_partner_type': 'restaurant'}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Crea el primer restaurante
+        </p>
+      </field>
+    </record>
+
     <!-- Menús -->
     <menuitem id="comparsa_menu_root" name="Comparsa">
       <menuitem id="comparsa_menu_members" name="Miembros" sequence="10">
@@ -172,6 +214,11 @@
         <menuitem id="comparsa_menu_charge" action="comparsa_charge_action" sequence="10"/>
         <menuitem id="comparsa_menu_charge_generate" action="comparsa_charge_generation_wizard_action" sequence="20"/>
         <menuitem id="comparsa_menu_charge_type" action="comparsa_charge_type_action" sequence="30"/>
+      </menuitem>
+      <menuitem id="comparsa_menu_config" name="Contactos" sequence="40">
+        <menuitem id="comparsa_menu_event_guest" action="comparsa_event_guest_action" sequence="10"/>
+        <menuitem id="comparsa_menu_band" action="comparsa_band_action" sequence="20"/>
+        <menuitem id="comparsa_menu_restaurant" action="comparsa_restaurant_action" sequence="30"/>
       </menuitem>
     </menuitem>
 

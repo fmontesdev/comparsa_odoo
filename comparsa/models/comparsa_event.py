@@ -73,6 +73,7 @@ class ComparsaEvent(models.Model):
     comodel_name="res.partner",
     string="Restaurante",
     index=True,
+    domain="[('comparsa_partner_type', '=', 'restaurant')]",
   )
   menu = fields.Text(string="Menú")
   active = fields.Boolean(string="Activo", default=True)

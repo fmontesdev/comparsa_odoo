@@ -13,3 +13,4 @@ from . import comparsa_charge
 from . import comparsa_charge_line
 from . import comparsa_charge_type
 from . import comparsa_account_move
+from . import comparsa_res_partner

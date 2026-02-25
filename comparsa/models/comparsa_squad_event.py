@@ -37,6 +37,7 @@ class ComparsaSquadEvent(models.Model):
     string="Banda de música",
     index=True,
     ondelete="restrict",
+    domain="[('comparsa_partner_type', '=', 'band')]",
   )
 
   # Campo calculado para mostrar el nombre del acto y de la escuadra

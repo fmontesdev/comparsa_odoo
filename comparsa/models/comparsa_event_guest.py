@@ -18,10 +18,12 @@ class ComparsaEventGuest(models.Model):
     )
 
     # Para invitados sin nombre conocido usar el contacto «Anónimo»
+    # Excluye empresas y partners clasificados como banda o restaurante
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Invitado",
         required=True,
         index=True,
         ondelete="restrict",
+        domain="[('is_company', '=', False), ('member_ids', '=', False), ('comparsa_partner_type', 'not in', ['band', 'restaurant'])]",
     )
